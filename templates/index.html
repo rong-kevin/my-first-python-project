@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>歌手資料探索網站</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="hero">
+        <div class="container">
+            <div class="hero-card">
+                <h1>🎵 發掘你最愛的聲音</h1>
+                <p class="subtitle">
+                    一鍵探索歌手的音樂宇宙，查看作品、風格、生平與相似歌手推薦。
+                </p>
+
+                <form action="/artist" method="get" class="search-box">
+                    <input type="text" name="name" placeholder="🔍 例如：Taylor Swift" required>
+                    <button type="submit">搜尋</button>
+                    <a href="/random" class="secondary-btn">隨機探索</a>
+                </form>
+
+                <div class="popular-searches">
+                    <p>熱門搜尋：</p>
+                    <div class="tags">
+                        {% for artist in popular_artists %}
+                            <a href="/artist?name={{ artist }}" class="tag">{{ artist }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <h3>📊 發行統計</h3>
+                    <p>用圖表快速查看歌手的作品年份分布。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤝 相似推薦</h3>
+                    <p>探索與你喜歡的歌手風格相近的音樂人。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📖 生平簡介</h3>
+                    <p>整合 Wikipedia 簡介，快速認識歌手背景。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

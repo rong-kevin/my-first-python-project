@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>歌手資料頁</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="page-card">
+            <a href="/" class="back-link">← 回首頁</a>
+
+            {% if error %}
+                <h1>{{ error }}</h1>
+            {% else %}
+                <div class="artist-header">
+                    <div>
+                        {% if artist.image %}
+                            <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <h1 class="artist-title">{{ artist.name }}</h1>
+
+                        <div class="info">
+                            <p>
+                                風格：
+                                {% if artist_tags %}
+                                    {{ artist_tags | join(', ') }}
+                                {% else %}
+                                    暫時無法取得
+                                {% endif %}
+                            </p>
+
+                            <a href="{{ artist.spotify_url }}" target="_blank" class="spotify-link">
+                                在 Spotify 開啟
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <h2>Spotify 播放器</h2>
+                    <iframe
+                        src="{{ artist.embed_url }}"
+                        class="spotify-embed"
+                        allowfullscreen=""
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy">
+                    </iframe>
+                </div>
+
+                <div class="section-card">
+                    <h2>生平簡介</h2>
+                    <p class="bio-text">{{ artist_bio }}</p>
+                </div>
+
+                <div class="section-card">
+                    <h2>專輯 / 單曲</h2>
+                    <ul>
+                        {% for album in albums %}
+                            <li>{{ album.name }}（發行日：{{ album.release_date }}）</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <h2>相似歌手推薦</h2>
+                    <ul>
+                        {% if similar_artists %}
+                            {% for similar in similar_artists %}
+                                <li>
+                                    <a href="/artist?name={{ similar }}">{{ similar }}</a>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li>暫時無法取得相似歌手資料</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <h2>作品年份分布圖</h2>
+                    <div class="chart-wrapper">
+                        <canvas id="yearChart"></canvas>
+                    </div>
+                </div>
+
+                <script>
+                    const labels = {{ chart_labels | tojson }};
+                    const dataValues = {{ chart_values | tojson }};
+
+                    const ctx = document.getElementById('yearChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: '作品數量',
+                                data: dataValues,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: true
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        precision: 0
+                                    }
+                                }
+                            }
+                        }
+                    });
+                </script>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
