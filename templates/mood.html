@@ -42,7 +42,10 @@
 
             {% if selected_recommendation %}
                 <div class="section-card mood-result">
-                    <h2>{{ selected_recommendation.label }}</h2>
+                    <div class="mood-result-header">
+                        <h2>{{ selected_recommendation.label }}</h2>
+                        <a href="/mood?type={{ selected_mood }}" class="secondary-btn refresh-mood-btn">換一組推薦</a>
+                    </div>
                     <p class="bio-text">{{ selected_recommendation.description }}</p>
 
                     <div class="mood-tags">
