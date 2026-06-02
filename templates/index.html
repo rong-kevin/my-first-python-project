@@ -17,7 +17,7 @@
                 <form action="/artist" method="get" class="search-box" id="artistSearchForm">
                     <input type="text" name="name" placeholder="🔍 例如：Taylor Swift" required>
                     <button type="submit" id="searchButton">搜尋</button>
-                    <a href="/random" class="secondary-btn">隨機探索</a>
+                    <a href="/random" class="secondary-btn artist-loading-link">隨機探索</a>
                     <a href="/mood" class="secondary-btn mood-btn">情境推薦</a>
                 </form>
 
@@ -38,7 +38,7 @@
                     <p>熱門搜尋：</p>
                     <div class="tags">
                         {% for artist in popular_artists %}
-                            <a href="/artist?name={{ artist }}" class="tag artist-link">{{ artist }}</a>
+                            <a href="/artist?name={{ artist }}" class="tag artist-loading-link">{{ artist }}</a>
                         {% endfor %}
                     </div>
                 </div>
@@ -69,7 +69,7 @@
         const searchForm = document.getElementById('artistSearchForm');
         const searchButton = document.getElementById('searchButton');
         const loadingPanel = document.getElementById('loadingPanel');
-        const artistLinks = document.querySelectorAll('.artist-link');
+        const artistLinks = document.querySelectorAll('.artist-loading-link');
 
         function showLoading() {
             loadingPanel.classList.add('visible');
@@ -79,9 +79,7 @@
 
         searchForm.addEventListener('submit', showLoading);
         artistLinks.forEach((link) => {
-            link.addEventListener('click', () => {
-                loadingPanel.classList.add('visible');
-            });
+            link.addEventListener('click', showLoading);
         });
     </script>
 </body>
