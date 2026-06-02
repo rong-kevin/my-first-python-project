@@ -1,11 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for
+import os
 import random
 from collections import Counter
+
+from flask import Flask, render_template, request, redirect, session, url_for
 from services.spotify_api import search_artist, get_artist_albums
 from services.lastfm_api import get_similar_artists, get_artist_tags
 from services.wiki_scraper import get_artist_bio
 
 app = Flask(__name__)
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "artist-explorer-dev-secret")
+
 POPULAR_ARTISTS = [
     "Taylor Swift",
     "周杰倫",
@@ -21,40 +25,69 @@ MOOD_RECOMMENDATIONS = {
     "study": {
         "label": "讀書 / 寫作業",
         "description": "節奏穩定、旋律舒服，適合需要專心但不想太安靜的時候。",
-        "artists": ["Laufey", "IU", "Keshi", "Jay Chou", "Norah Jones"],
+        "artists": ["Laufey", "IU", "Keshi", "Jay Chou", "Norah Jones", "Rex Orange County", "Mac Ayres", "FKJ", "林宥嘉", "HYBS"],
         "tags": ["lo-fi", "acoustic", "r&b", "soft pop"]
     },
     "workout": {
         "label": "運動 / 健身",
         "description": "節奏強、能量高，適合跑步、重訓或需要提振精神。",
-        "artists": ["Dua Lipa", "BLACKPINK", "Travis Scott", "The Weeknd", "Bruno Mars"],
+        "artists": ["Dua Lipa", "BLACKPINK", "Travis Scott", "The Weeknd", "Bruno Mars", "Doja Cat", "Imagine Dragons", "Calvin Harris", "IVE", "Post Malone"],
         "tags": ["dance pop", "hip-hop", "edm", "k-pop"]
     },
     "commute": {
         "label": "通勤 / 走路",
         "description": "旋律好入口、情緒不太重，適合在路上輕鬆聽。",
-        "artists": ["Ed Sheeran", "NewJeans", "告五人", "Ariana Grande", "Maroon 5"],
+        "artists": ["Ed Sheeran", "NewJeans", "告五人", "Ariana Grande", "Maroon 5", "Charlie Puth", "Vaundy", "Coldplay", "YOASOBI", "OneRepublic"],
         "tags": ["pop", "indie", "easy listening"]
     },
     "sad": {
         "label": "失戀 / 難過",
         "description": "歌詞情緒感強，適合想整理心情或被音樂陪伴的時候。",
-        "artists": ["Adele", "Taylor Swift", "田馥甄", "Joji", "Olivia Rodrigo"],
+        "artists": ["Adele", "Taylor Swift", "田馥甄", "Joji", "Olivia Rodrigo", "Sam Smith", "Lewis Capaldi", "林俊傑", "Phoebe Bridgers", "Conan Gray"],
         "tags": ["ballad", "sad pop", "singer-songwriter"]
     },
     "night": {
         "label": "睡前 / 深夜",
         "description": "聲音柔和、氛圍放鬆，適合睡前、深夜或一個人放空。",
-        "artists": ["Frank Ocean", "Billie Eilish", "Aimer", "SZA", "Cigarettes After Sex"],
+        "artists": ["Frank Ocean", "Billie Eilish", "Aimer", "SZA", "Cigarettes After Sex", "Daniel Caesar", "The 1975", "HONNE", "beabadoobee", "Wave to Earth"],
         "tags": ["jazz pop", "r&b", "ambient", "slow"]
     },
     "rainy": {
         "label": "下雨天",
         "description": "帶一點電影感和情緒厚度，適合雨天、咖啡廳或窗邊時間。",
-        "artists": ["deca joins", "Lana Del Rey", "Bon Iver", "Radiohead", "落日飛車"],
+        "artists": ["deca joins", "Lana Del Rey", "Bon Iver", "Radiohead", "落日飛車", "No Party For Cao Dong", "Men I Trust", "Beach House", "椎名林檎", "Sufjan Stevens"],
         "tags": ["indie", "city pop", "ballad", "dream pop"]
     }
 }
+
+
+def pick_mood_artists(mood_key, candidates, count=5):
+    previous_by_mood = session.get("previous_mood_artists", {})
+    previous_artists = previous_by_mood.get(mood_key, [])
+    available_artists = [artist for artist in candidates if artist not in previous_artists]
+
+    if len(available_artists) >= count:
+        selected_artists = random.sample(available_artists, count)
+    else:
+        selected_artists = random.sample(candidates, min(count, len(candidates)))
+        for _ in range(10):
+            if selected_artists != previous_artists:
+                break
+            selected_artists = random.sample(candidates, min(count, len(candidates)))
+
+    previous_by_mood[mood_key] = selected_artists
+    session["previous_mood_artists"] = previous_by_mood
+    return selected_artists
+
+
+def build_mood_recommendation(mood_key):
+    mood = MOOD_RECOMMENDATIONS.get(mood_key)
+    if not mood:
+        return None
+
+    recommendation = mood.copy()
+    recommendation["artists"] = pick_mood_artists(mood_key, mood["artists"])
+    return recommendation
 
 
 @app.route("/")
@@ -71,7 +104,7 @@ def random_artist():
 @app.route("/mood")
 def mood_page():
     selected_mood = request.args.get("type", "").strip()
-    selected_recommendation = MOOD_RECOMMENDATIONS.get(selected_mood)
+    selected_recommendation = build_mood_recommendation(selected_mood)
 
     return render_template(
         "mood.html",
