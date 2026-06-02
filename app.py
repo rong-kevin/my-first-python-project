@@ -14,12 +14,16 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "artist-explorer-dev-secret")
 POPULAR_ARTISTS = [
     "Taylor Swift",
     "周杰倫",
-    "Ed Sheeran",
-    "Drake",
-    "Travis Scott",
+    "NewJeans",
+    "Laufey",
+    "告五人",
+    "YOASOBI",
+    "Billie Eilish",
     "Ariana Grande",
     "The Weeknd",
-    "Bruno Mars"
+    "林俊傑",
+    "落日飛車",
+    "Dua Lipa"
 ]
 
 MOOD_RECOMMENDATIONS = {
