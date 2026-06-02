@@ -91,6 +91,12 @@ body {
     transform: translateY(-1px);
 }
 
+.search-box button:disabled {
+    background-color: #8fd9aa;
+    cursor: wait;
+    transform: none;
+}
+
 .secondary-btn {
     background-color: #f0f0f0;
     color: #333;
@@ -109,6 +115,17 @@ body {
 .mood-btn:hover {
     background: #000;
     color: white;
+}
+
+.loading-text {
+    color: #555;
+    display: none;
+    font-size: 16px;
+    margin: 14px 0 0;
+}
+
+.loading-text.visible {
+    display: block;
 }
 
 .popular-searches {
