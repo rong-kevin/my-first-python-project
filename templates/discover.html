@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>風格音樂探索</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="page-card">
+            <a href="/" class="back-link">← 回首頁</a>
+
+            <div class="mood-header discover-header">
+                <h1>風格音樂探索</h1>
+                <p>
+                    不知道想聽誰的時候，可以先從語言或曲風開始選。系統會依照中文、英文、韓文、日文、R&B、Indie、舞曲或放鬆風格推薦適合探索的歌手。
+                </p>
+            </div>
+
+            <div class="discover-tabs">
+                <span>語言</span>
+                <span>曲風</span>
+            </div>
+
+            <div class="mood-options discover-options">
+                {% for filter_key, filter in filters.items() %}
+                    <a
+                        href="/discover?type={{ filter_key }}"
+                        class="mood-option {% if selected_filter == filter_key %}active{% endif %}">
+                        {{ filter.label }}
+                    </a>
+                {% endfor %}
+            </div>
+
+            <div class="loading-panel mood-loading-panel" id="loadingPanel">
+                <div class="loading-disc"></div>
+                <div>
+                    <strong>正在建立音樂探索卡</strong>
+                    <p>同步整理歌手資料、風格標籤與生平簡介，請稍候。</p>
+                    <div class="loading-sources">
+                        <span>Spotify</span>
+                        <span>Last.fm</span>
+                        <span>Wikipedia</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if selected_recommendation %}
+                <div class="section-card mood-result discover-result">
+                    <h2>{{ selected_recommendation.label }}</h2>
+                    <p class="bio-text">{{ selected_recommendation.description }}</p>
+
+                    <div class="mood-tags">
+                        {% for tag in selected_recommendation.tags %}
+                            <span>{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <h3>推薦歌手</h3>
+                    <div class="recommendation-grid">
+                        {% for artist in selected_recommendation.artists %}
+                            <a href="/artist?name={{ artist }}" class="recommendation-card artist-loading-link">
+                                <strong>{{ artist }}</strong>
+                                <span>查看歌手資料</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="section-card mood-empty discover-empty">
+                    <h2>先選一種語言或曲風</h2>
+                    <p class="bio-text">這裡可以讓使用者不用知道歌手名字，也能從想聽的音樂方向開始探索。</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const loadingPanel = document.getElementById('loadingPanel');
+        const artistLinks = document.querySelectorAll('.artist-loading-link');
+
+        function showLoading() {
+            loadingPanel.classList.add('visible');
+        }
+
+        artistLinks.forEach((link) => {
+            link.addEventListener('click', showLoading);
+        });
+    </script>
+</body>
+</html>
