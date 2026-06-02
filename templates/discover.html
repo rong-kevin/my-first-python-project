@@ -26,7 +26,7 @@
                 {% for filter_key, filter in filters.items() %}
                     <a
                         href="/discover?type={{ filter_key }}"
-                        class="mood-option {% if selected_filter == filter_key %}active{% endif %}">
+                        class="mood-option discover-loading-link {% if selected_filter == filter_key %}active{% endif %}">
                         {{ filter.label }}
                     </a>
                 {% endfor %}
@@ -35,19 +35,22 @@
             <div class="loading-panel mood-loading-panel" id="loadingPanel">
                 <div class="loading-disc"></div>
                 <div>
-                    <strong>正在建立音樂探索卡</strong>
-                    <p>同步整理歌手資料、風格標籤與生平簡介，請稍候。</p>
+                    <strong>正在建立風格推薦</strong>
+                    <p>正在替這個語言或曲風挑選下一組不重複的推薦歌手。</p>
                     <div class="loading-sources">
-                        <span>Spotify</span>
-                        <span>Last.fm</span>
-                        <span>Wikipedia</span>
+                        <span>風格分類</span>
+                        <span>推薦輪替</span>
+                        <span>歌手資料</span>
                     </div>
                 </div>
             </div>
 
             {% if selected_recommendation %}
                 <div class="section-card mood-result discover-result">
-                    <h2>{{ selected_recommendation.label }}</h2>
+                    <div class="mood-result-header">
+                        <h2>{{ selected_recommendation.label }}</h2>
+                        <a href="/discover?type={{ selected_filter }}" class="secondary-btn refresh-mood-btn discover-loading-link">換一組推薦</a>
+                    </div>
                     <p class="bio-text">{{ selected_recommendation.description }}</p>
 
                     <div class="mood-tags">
@@ -77,13 +80,13 @@
 
     <script>
         const loadingPanel = document.getElementById('loadingPanel');
-        const artistLinks = document.querySelectorAll('.artist-loading-link');
+        const loadingLinks = document.querySelectorAll('.artist-loading-link, .discover-loading-link');
 
         function showLoading() {
             loadingPanel.classList.add('visible');
         }
 
-        artistLinks.forEach((link) => {
+        loadingLinks.forEach((link) => {
             link.addEventListener('click', showLoading);
         });
     </script>
