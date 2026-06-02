@@ -105,17 +105,24 @@ def artist_page():
         artist_tags = get_artist_tags(artist_name)
         artist_bio = get_artist_bio(artist_name)
 
-        years = []
+        album_years = []
+        single_years = []
         for album in albums:
             release_date = album.get("release_date", "")
+            album_type = album.get("album_type", "album")
             if release_date:
                 year = release_date[:4]
                 if year.isdigit():
-                    years.append(year)
+                    if album_type == "single":
+                        single_years.append(year)
+                    else:
+                        album_years.append(year)
 
-        year_counts = Counter(years)
-        chart_labels = sorted(year_counts.keys())
-        chart_values = [year_counts[year] for year in chart_labels]
+        album_counts = Counter(album_years)
+        single_counts = Counter(single_years)
+        chart_labels = sorted(set(album_counts.keys()) | set(single_counts.keys()))
+        album_chart_values = [album_counts[year] for year in chart_labels]
+        single_chart_values = [single_counts[year] for year in chart_labels]
 
         return render_template(
             "artist.html",
@@ -125,7 +132,8 @@ def artist_page():
             artist_tags=artist_tags,
             artist_bio=artist_bio,
             chart_labels=chart_labels,
-            chart_values=chart_values,
+            album_chart_values=album_chart_values,
+            single_chart_values=single_chart_values,
             error=None
         )
 
