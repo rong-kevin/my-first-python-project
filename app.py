@@ -57,6 +57,13 @@ MOOD_RECOMMENDATIONS = {
 }
 
 
+def safe_call(function, fallback, *args):
+    try:
+        return function(*args)
+    except Exception:
+        return fallback
+
+
 @app.route("/")
 def home():
     return render_template("index.html", popular_artists=POPULAR_ARTISTS)
@@ -93,53 +100,48 @@ def artist_page():
 
     try:
         artist = search_artist(artist_name)
-
-        if not artist:
-            return render_template(
-                "artist.html",
-                error="找不到這位歌手"
-            )
-
-        albums = get_artist_albums(artist_name)
-        try:
-            top_tracks = get_artist_top_tracks(artist_name)
-        except Exception:
-            top_tracks = []
-
-        similar_artists = get_similar_artists(artist_name)
-        artist_tags = get_artist_tags(artist_name)
-        artist_bio = get_artist_bio(artist_name)
-
-        years = []
-        for album in albums:
-            release_date = album.get("release_date", "")
-            if release_date:
-                year = release_date[:4]
-                if year.isdigit():
-                    years.append(year)
-
-        year_counts = Counter(years)
-        chart_labels = sorted(year_counts.keys())
-        chart_values = [year_counts[year] for year in chart_labels]
-
+    except Exception:
         return render_template(
             "artist.html",
-            artist=artist,
-            albums=albums,
-            top_tracks=top_tracks,
-            similar_artists=similar_artists,
-            artist_tags=artist_tags,
-            artist_bio=artist_bio,
-            chart_labels=chart_labels,
-            chart_values=chart_values,
-            error=None
+            error="系統暫時無法取得 Spotify 歌手資料，請稍後再試。"
         )
 
-    except Exception as e:
+    if not artist:
         return render_template(
             "artist.html",
-            error="系統暫時無法取得部分外部資料，請稍後再試。"
+            error="找不到這位歌手"
         )
+
+    albums = safe_call(get_artist_albums, [], artist_name)
+    top_tracks = safe_call(get_artist_top_tracks, [], artist_name)
+    similar_artists = safe_call(get_similar_artists, [], artist_name)
+    artist_tags = safe_call(get_artist_tags, [], artist_name)
+    artist_bio = safe_call(get_artist_bio, "暫時無法取得生平簡介。", artist_name)
+
+    years = []
+    for album in albums:
+        release_date = album.get("release_date", "")
+        if release_date:
+            year = release_date[:4]
+            if year.isdigit():
+                years.append(year)
+
+    year_counts = Counter(years)
+    chart_labels = sorted(year_counts.keys())
+    chart_values = [year_counts[year] for year in chart_labels]
+
+    return render_template(
+        "artist.html",
+        artist=artist,
+        albums=albums,
+        top_tracks=top_tracks,
+        similar_artists=similar_artists,
+        artist_tags=artist_tags,
+        artist_bio=artist_bio,
+        chart_labels=chart_labels,
+        chart_values=chart_values,
+        error=None
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
