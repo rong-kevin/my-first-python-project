@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 import random
 from collections import Counter
-from services.spotify_api import search_artist, get_artist_albums
+from services.spotify_api import search_artist, get_artist_albums, get_artist_top_tracks
 from services.lastfm_api import get_similar_artists, get_artist_tags
 from services.wiki_scraper import get_artist_bio
 
@@ -101,6 +101,7 @@ def artist_page():
             )
 
         albums = get_artist_albums(artist_name)
+        top_tracks = get_artist_top_tracks(artist_name)
         similar_artists = get_similar_artists(artist_name)
         artist_tags = get_artist_tags(artist_name)
         artist_bio = get_artist_bio(artist_name)
@@ -121,6 +122,7 @@ def artist_page():
             "artist.html",
             artist=artist,
             albums=albums,
+            top_tracks=top_tracks,
             similar_artists=similar_artists,
             artist_tags=artist_tags,
             artist_bio=artist_bio,
