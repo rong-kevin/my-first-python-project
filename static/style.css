@@ -430,6 +430,23 @@ li {
     transform: translateY(-1px);
 }
 
+.mood-result-header {
+    align-items: center;
+    display: flex;
+    gap: 14px;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.mood-result-header h2 {
+    margin-bottom: 0;
+}
+
+.refresh-mood-btn {
+    flex: 0 0 auto;
+    padding: 12px 18px;
+}
+
 .mood-result h3 {
     margin: 26px 0 14px;
     font-size: 24px;
@@ -520,6 +537,11 @@ li {
     }
 
     .loading-panel.visible {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .mood-result-header {
         align-items: flex-start;
         flex-direction: column;
     }
