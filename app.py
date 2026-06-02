@@ -30,49 +30,49 @@ DISCOVER_FILTERS = {
     "mandarin": {
         "label": "中文歌手",
         "description": "華語流行、抒情與樂團作品，適合想聽中文歌詞和熟悉語感時。",
-        "artists": ["周杰倫", "林俊傑", "田馥甄", "告五人", "落日飛車", "林宥嘉"],
+        "artists": ["周杰倫", "林俊傑", "田馥甄", "告五人", "落日飛車", "林宥嘉", "孫燕姿", "蔡依林", "韋禮安", "五月天"],
         "tags": ["Mandopop", "中文", "抒情", "樂團"]
     },
     "english": {
         "label": "英文歌手",
         "description": "從流行到創作歌手，適合想探索英文主流與個人風格強烈的音樂人。",
-        "artists": ["Taylor Swift", "Ed Sheeran", "Adele", "Billie Eilish", "Bruno Mars", "Dua Lipa"],
+        "artists": ["Taylor Swift", "Ed Sheeran", "Adele", "Billie Eilish", "Bruno Mars", "Dua Lipa", "Olivia Rodrigo", "Harry Styles", "Ariana Grande", "Coldplay"],
         "tags": ["pop", "singer-songwriter", "ballad"]
     },
     "korean": {
         "label": "韓文 / K-pop",
         "description": "節奏感、舞台感與流行製作完整，適合想聽韓文或高能量歌曲時。",
-        "artists": ["NewJeans", "BLACKPINK", "IVE", "IU", "BTS", "LE SSERAFIM"],
+        "artists": ["NewJeans", "BLACKPINK", "IVE", "IU", "BTS", "LE SSERAFIM", "TWICE", "SEVENTEEN", "aespa", "Stray Kids"],
         "tags": ["K-pop", "dance", "idol", "韓文"]
     },
     "japanese": {
         "label": "日文 / J-pop",
         "description": "旋律線鮮明、情緒細膩，適合想聽日文流行、動畫感或城市感音樂時。",
-        "artists": ["YOASOBI", "Aimer", "Vaundy", "椎名林檎", "米津玄師", "宇多田光"],
+        "artists": ["YOASOBI", "Aimer", "Vaundy", "椎名林檎", "米津玄師", "宇多田光", "King Gnu", "Official Hige Dandism", "藤井風", "Aimyon"],
         "tags": ["J-pop", "日文", "anime", "city pop"]
     },
     "rnb": {
         "label": "R&B / 深夜感",
         "description": "聲線柔和、節奏放鬆，適合深夜、放空或想聽氛圍感時。",
-        "artists": ["SZA", "Frank Ocean", "Daniel Caesar", "The Weeknd", "Keshi", "HONNE"],
+        "artists": ["SZA", "Frank Ocean", "Daniel Caesar", "The Weeknd", "Keshi", "HONNE", "H.E.R.", "Khalid", "Giveon", "Summer Walker"],
         "tags": ["R&B", "soul", "slow", "night"]
     },
     "indie": {
         "label": "Indie / 樂團感",
         "description": "帶有獨立音樂與現場感，適合想聽不那麼商業、比較有個性的聲音。",
-        "artists": ["deca joins", "No Party For Cao Dong", "Men I Trust", "Beach House", "Bon Iver", "Radiohead"],
+        "artists": ["deca joins", "No Party For Cao Dong", "Men I Trust", "Beach House", "Bon Iver", "Radiohead", "The 1975", "Arctic Monkeys", "Cigarettes After Sex", "Vampire Weekend"],
         "tags": ["indie", "band", "dream pop", "alternative"]
     },
     "dance": {
         "label": "舞曲 / 健身",
         "description": "鼓點明確、能量高，適合派對、運動或需要讓精神上線時。",
-        "artists": ["Calvin Harris", "Doja Cat", "Travis Scott", "Ariana Grande", "Post Malone", "Imagine Dragons"],
+        "artists": ["Calvin Harris", "Doja Cat", "Travis Scott", "Ariana Grande", "Post Malone", "Imagine Dragons", "David Guetta", "The Chainsmokers", "Martin Garrix", "Rihanna"],
         "tags": ["dance", "edm", "hip-hop", "workout"]
     },
     "acoustic": {
         "label": "Acoustic / 放鬆",
         "description": "編曲簡單、聲音溫暖，適合讀書、睡前或需要降低壓力時。",
-        "artists": ["Laufey", "Norah Jones", "Rex Orange County", "Mac Ayres", "HYBS", "Wave to Earth"],
+        "artists": ["Laufey", "Norah Jones", "Rex Orange County", "Mac Ayres", "HYBS", "Wave to Earth", "Jack Johnson", "John Mayer", "beabadoobee", "Novo Amor"],
         "tags": ["acoustic", "soft", "jazz pop", "chill"]
     }
 }
@@ -121,9 +121,9 @@ def recommendation_key(artists):
     return "|".join(sorted(artists))
 
 
-def pick_mood_artists(mood_key, candidates, count=5):
-    used_by_mood = session.get("used_mood_recommendations", {})
-    used_keys = set(used_by_mood.get(mood_key, []))
+def pick_recommendation_artists(session_key, group_key, candidates, count=5):
+    used_by_group = session.get(session_key, {})
+    used_keys = set(used_by_group.get(group_key, []))
     candidate_combinations = list(combinations(candidates, min(count, len(candidates))))
     unused_combinations = [
         combo for combo in candidate_combinations
@@ -137,8 +137,8 @@ def pick_mood_artists(mood_key, candidates, count=5):
     selected_artists = list(random.choice(unused_combinations))
     random.shuffle(selected_artists)
     used_keys.add(recommendation_key(selected_artists))
-    used_by_mood[mood_key] = list(used_keys)
-    session["used_mood_recommendations"] = used_by_mood
+    used_by_group[group_key] = list(used_keys)
+    session[session_key] = used_by_group
     return selected_artists
 
 
@@ -148,7 +148,25 @@ def build_mood_recommendation(mood_key):
         return None
 
     recommendation = mood.copy()
-    recommendation["artists"] = pick_mood_artists(mood_key, mood["artists"])
+    recommendation["artists"] = pick_recommendation_artists(
+        "used_mood_recommendations",
+        mood_key,
+        mood["artists"]
+    )
+    return recommendation
+
+
+def build_discover_recommendation(filter_key):
+    filter_data = DISCOVER_FILTERS.get(filter_key)
+    if not filter_data:
+        return None
+
+    recommendation = filter_data.copy()
+    recommendation["artists"] = pick_recommendation_artists(
+        "used_discover_recommendations",
+        filter_key,
+        filter_data["artists"]
+    )
     return recommendation
 
 
@@ -179,7 +197,7 @@ def mood_page():
 @app.route("/discover")
 def discover_page():
     selected_filter = request.args.get("type", "").strip()
-    selected_recommendation = DISCOVER_FILTERS.get(selected_filter)
+    selected_recommendation = build_discover_recommendation(selected_filter)
 
     return render_template(
         "discover.html",
@@ -245,11 +263,12 @@ def artist_page():
             error=None
         )
 
-    except Exception as e:
+    except Exception:
         return render_template(
             "artist.html",
             error="系統暫時無法取得部分外部資料，請稍後再試。"
         )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
