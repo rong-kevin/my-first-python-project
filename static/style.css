@@ -368,6 +368,13 @@ li {
     border-radius: 16px;
 }
 
+.chart-note {
+    color: #666;
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0 0 14px;
+}
+
 .chart-wrapper {
     background: white;
     border-radius: 18px;
