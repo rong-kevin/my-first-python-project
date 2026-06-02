@@ -1,6 +1,7 @@
 import os
 import random
 from collections import Counter
+from itertools import combinations
 
 from flask import Flask, render_template, request, redirect, session, url_for
 from services.spotify_api import search_artist, get_artist_albums
@@ -61,22 +62,28 @@ MOOD_RECOMMENDATIONS = {
 }
 
 
+def recommendation_key(artists):
+    return "|".join(sorted(artists))
+
+
 def pick_mood_artists(mood_key, candidates, count=5):
-    previous_by_mood = session.get("previous_mood_artists", {})
-    previous_artists = previous_by_mood.get(mood_key, [])
-    available_artists = [artist for artist in candidates if artist not in previous_artists]
+    used_by_mood = session.get("used_mood_recommendations", {})
+    used_keys = set(used_by_mood.get(mood_key, []))
+    candidate_combinations = list(combinations(candidates, min(count, len(candidates))))
+    unused_combinations = [
+        combo for combo in candidate_combinations
+        if recommendation_key(combo) not in used_keys
+    ]
 
-    if len(available_artists) >= count:
-        selected_artists = random.sample(available_artists, count)
-    else:
-        selected_artists = random.sample(candidates, min(count, len(candidates)))
-        for _ in range(10):
-            if selected_artists != previous_artists:
-                break
-            selected_artists = random.sample(candidates, min(count, len(candidates)))
+    if not unused_combinations:
+        used_keys = set()
+        unused_combinations = candidate_combinations
 
-    previous_by_mood[mood_key] = selected_artists
-    session["previous_mood_artists"] = previous_by_mood
+    selected_artists = list(random.choice(unused_combinations))
+    random.shuffle(selected_artists)
+    used_keys.add(recommendation_key(selected_artists))
+    used_by_mood[mood_key] = list(used_keys)
+    session["used_mood_recommendations"] = used_by_mood
     return selected_artists
 
 
