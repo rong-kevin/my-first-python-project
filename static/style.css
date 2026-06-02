@@ -285,6 +285,48 @@ li {
     border-radius: 16px;
 }
 
+.track-list {
+    display: grid;
+    gap: 12px;
+}
+
+.track-item {
+    align-items: center;
+    background: white;
+    border: 1px solid #e7e7e7;
+    border-radius: 16px;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 48px 1fr;
+    padding: 14px 16px;
+}
+
+.track-rank {
+    align-items: center;
+    background: #1db954;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    font-size: 18px;
+    font-weight: 700;
+    height: 40px;
+    justify-content: center;
+    width: 40px;
+}
+
+.track-item strong {
+    display: block;
+    font-size: 19px;
+    line-height: 1.4;
+}
+
+.track-item p {
+    color: #666;
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 4px 0 0;
+}
+
 .chart-wrapper {
     background: white;
     border-radius: 18px;
