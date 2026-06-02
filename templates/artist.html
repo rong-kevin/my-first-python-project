@@ -53,25 +53,6 @@
                 </div>
 
                 <div class="section-card">
-                    <h2>熱門歌曲 Top 5</h2>
-                    {% if top_tracks %}
-                        <div class="track-list">
-                            {% for track in top_tracks %}
-                                <div class="track-item">
-                                    <span class="track-rank">{{ loop.index }}</span>
-                                    <div>
-                                        <strong>{{ track.name }}</strong>
-                                        <p>{{ track.album }}</p>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p class="bio-text">暫時無法取得熱門歌曲資料。</p>
-                    {% endif %}
-                </div>
-
-                <div class="section-card">
                     <h2>生平簡介</h2>
                     <p class="bio-text">{{ artist_bio }}</p>
                 </div>
