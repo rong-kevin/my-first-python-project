@@ -26,6 +26,57 @@ POPULAR_ARTISTS = [
     "Dua Lipa"
 ]
 
+DISCOVER_FILTERS = {
+    "mandarin": {
+        "label": "中文歌手",
+        "description": "華語流行、抒情與樂團作品，適合想聽中文歌詞和熟悉語感時。",
+        "artists": ["周杰倫", "林俊傑", "田馥甄", "告五人", "落日飛車", "林宥嘉"],
+        "tags": ["Mandopop", "中文", "抒情", "樂團"]
+    },
+    "english": {
+        "label": "英文歌手",
+        "description": "從流行到創作歌手，適合想探索英文主流與個人風格強烈的音樂人。",
+        "artists": ["Taylor Swift", "Ed Sheeran", "Adele", "Billie Eilish", "Bruno Mars", "Dua Lipa"],
+        "tags": ["pop", "singer-songwriter", "ballad"]
+    },
+    "korean": {
+        "label": "韓文 / K-pop",
+        "description": "節奏感、舞台感與流行製作完整，適合想聽韓文或高能量歌曲時。",
+        "artists": ["NewJeans", "BLACKPINK", "IVE", "IU", "BTS", "LE SSERAFIM"],
+        "tags": ["K-pop", "dance", "idol", "韓文"]
+    },
+    "japanese": {
+        "label": "日文 / J-pop",
+        "description": "旋律線鮮明、情緒細膩，適合想聽日文流行、動畫感或城市感音樂時。",
+        "artists": ["YOASOBI", "Aimer", "Vaundy", "椎名林檎", "米津玄師", "宇多田光"],
+        "tags": ["J-pop", "日文", "anime", "city pop"]
+    },
+    "rnb": {
+        "label": "R&B / 深夜感",
+        "description": "聲線柔和、節奏放鬆，適合深夜、放空或想聽氛圍感時。",
+        "artists": ["SZA", "Frank Ocean", "Daniel Caesar", "The Weeknd", "Keshi", "HONNE"],
+        "tags": ["R&B", "soul", "slow", "night"]
+    },
+    "indie": {
+        "label": "Indie / 樂團感",
+        "description": "帶有獨立音樂與現場感，適合想聽不那麼商業、比較有個性的聲音。",
+        "artists": ["deca joins", "No Party For Cao Dong", "Men I Trust", "Beach House", "Bon Iver", "Radiohead"],
+        "tags": ["indie", "band", "dream pop", "alternative"]
+    },
+    "dance": {
+        "label": "舞曲 / 健身",
+        "description": "鼓點明確、能量高，適合派對、運動或需要讓精神上線時。",
+        "artists": ["Calvin Harris", "Doja Cat", "Travis Scott", "Ariana Grande", "Post Malone", "Imagine Dragons"],
+        "tags": ["dance", "edm", "hip-hop", "workout"]
+    },
+    "acoustic": {
+        "label": "Acoustic / 放鬆",
+        "description": "編曲簡單、聲音溫暖，適合讀書、睡前或需要降低壓力時。",
+        "artists": ["Laufey", "Norah Jones", "Rex Orange County", "Mac Ayres", "HYBS", "Wave to Earth"],
+        "tags": ["acoustic", "soft", "jazz pop", "chill"]
+    }
+}
+
 MOOD_RECOMMENDATIONS = {
     "study": {
         "label": "讀書 / 寫作業",
@@ -121,6 +172,19 @@ def mood_page():
         "mood.html",
         moods=MOOD_RECOMMENDATIONS,
         selected_mood=selected_mood,
+        selected_recommendation=selected_recommendation
+    )
+
+
+@app.route("/discover")
+def discover_page():
+    selected_filter = request.args.get("type", "").strip()
+    selected_recommendation = DISCOVER_FILTERS.get(selected_filter)
+
+    return render_template(
+        "discover.html",
+        filters=DISCOVER_FILTERS,
+        selected_filter=selected_filter,
         selected_recommendation=selected_recommendation
     )
 
