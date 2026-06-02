@@ -101,7 +101,11 @@ def artist_page():
             )
 
         albums = get_artist_albums(artist_name)
-        top_tracks = get_artist_top_tracks(artist_name)
+        try:
+            top_tracks = get_artist_top_tracks(artist_name)
+        except Exception:
+            top_tracks = []
+
         similar_artists = get_similar_artists(artist_name)
         artist_tags = get_artist_tags(artist_name)
         artist_bio = get_artist_bio(artist_name)
