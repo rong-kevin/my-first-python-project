@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>情境音樂推薦</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="page-card">
+            <a href="/" class="back-link">← 回首頁</a>
+
+            <div class="mood-header">
+                <h1>情境音樂推薦</h1>
+                <p>
+                    選擇現在的情境，快速找到適合讀書、運動、通勤、失戀、睡前或下雨天聽的歌手。
+                </p>
+            </div>
+
+            <div class="mood-options">
+                {% for mood_key, mood in moods.items() %}
+                    <a
+                        href="/mood?type={{ mood_key }}"
+                        class="mood-option {% if selected_mood == mood_key %}active{% endif %}">
+                        {{ mood.label }}
+                    </a>
+                {% endfor %}
+            </div>
+
+            {% if selected_recommendation %}
+                <div class="section-card mood-result">
+                    <h2>{{ selected_recommendation.label }}</h2>
+                    <p class="bio-text">{{ selected_recommendation.description }}</p>
+
+                    <div class="mood-tags">
+                        {% for tag in selected_recommendation.tags %}
+                            <span>{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <h3>推薦歌手</h3>
+                    <div class="recommendation-grid">
+                        {% for artist in selected_recommendation.artists %}
+                            <a href="/artist?name={{ artist }}" class="recommendation-card">
+                                <strong>{{ artist }}</strong>
+                                <span>查看歌手資料</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="section-card mood-empty">
+                    <h2>先選一個情境</h2>
+                    <p class="bio-text">不同情境會推薦不同風格的音樂人，點選上方按鈕開始探索。</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
