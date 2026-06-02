@@ -61,7 +61,14 @@
                     <h2>專輯 / 單曲</h2>
                     <ul>
                         {% for album in albums %}
-                            <li>{{ album.name }}（發行日：{{ album.release_date }}）</li>
+                            <li>
+                                {{ album.name }}
+                                {% if album.album_type == 'single' %}
+                                    （單曲，發行日：{{ album.release_date }}）
+                                {% else %}
+                                    （專輯，發行日：{{ album.release_date }}）
+                                {% endif %}
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -83,6 +90,7 @@
 
                 <div class="section-card">
                     <h2>作品年份分布圖</h2>
+                    <p class="chart-note">依 Spotify 作品類型區分專輯與單曲，方便比較不同年份的發行重點。</p>
                     <div class="chart-wrapper">
                         <canvas id="yearChart"></canvas>
                     </div>
@@ -90,18 +98,28 @@
 
                 <script>
                     const labels = {{ chart_labels | tojson }};
-                    const dataValues = {{ chart_values | tojson }};
+                    const albumValues = {{ album_chart_values | tojson }};
+                    const singleValues = {{ single_chart_values | tojson }};
 
                     const ctx = document.getElementById('yearChart').getContext('2d');
                     new Chart(ctx, {
                         type: 'bar',
                         data: {
                             labels: labels,
-                            datasets: [{
-                                label: '作品數量',
-                                data: dataValues,
-                                borderWidth: 1
-                            }]
+                            datasets: [
+                                {
+                                    label: '專輯',
+                                    data: albumValues,
+                                    backgroundColor: '#1db954',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: '單曲',
+                                    data: singleValues,
+                                    backgroundColor: '#222222',
+                                    borderWidth: 1
+                                }
+                            ]
                         },
                         options: {
                             responsive: true,
@@ -111,8 +129,12 @@
                                 }
                             },
                             scales: {
+                                x: {
+                                    stacked: true
+                                },
                                 y: {
                                     beginAtZero: true,
+                                    stacked: true,
                                     ticks: {
                                         precision: 0
                                     }
