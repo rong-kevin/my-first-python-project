@@ -20,7 +20,19 @@
                     <a href="/random" class="secondary-btn">隨機探索</a>
                     <a href="/mood" class="secondary-btn mood-btn">情境推薦</a>
                 </form>
-                <p class="loading-text" id="loadingText">正在整合 Spotify、Last.fm 與 Wikipedia 資料...</p>
+
+                <div class="loading-panel" id="loadingPanel">
+                    <div class="loading-disc"></div>
+                    <div>
+                        <strong>正在建立音樂探索卡</strong>
+                        <p>同步整理歌手資料、風格標籤與生平簡介，請稍候。</p>
+                        <div class="loading-sources">
+                            <span>Spotify</span>
+                            <span>Last.fm</span>
+                            <span>Wikipedia</span>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="popular-searches">
                     <p>熱門搜尋：</p>
@@ -56,11 +68,11 @@
     <script>
         const searchForm = document.getElementById('artistSearchForm');
         const searchButton = document.getElementById('searchButton');
-        const loadingText = document.getElementById('loadingText');
+        const loadingPanel = document.getElementById('loadingPanel');
         const artistLinks = document.querySelectorAll('.artist-link');
 
         function showLoading() {
-            loadingText.classList.add('visible');
+            loadingPanel.classList.add('visible');
             searchButton.textContent = '搜尋中...';
             searchButton.disabled = true;
         }
@@ -68,7 +80,7 @@
         searchForm.addEventListener('submit', showLoading);
         artistLinks.forEach((link) => {
             link.addEventListener('click', () => {
-                loadingText.classList.add('visible');
+                loadingPanel.classList.add('visible');
             });
         });
     </script>
