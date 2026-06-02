@@ -21,7 +21,7 @@ MOOD_RECOMMENDATIONS = {
     "study": {
         "label": "讀書 / 寫作業",
         "description": "節奏穩定、旋律舒服，適合需要專心但不想太安靜的時候。",
-        "artists": ["Laufey", "IU", "Keshi", "Jay Chou", "Ed Sheeran"],
+        "artists": ["Laufey", "IU", "Keshi", "Jay Chou", "Norah Jones"],
         "tags": ["lo-fi", "acoustic", "r&b", "soft pop"]
     },
     "workout": {
@@ -33,25 +33,25 @@ MOOD_RECOMMENDATIONS = {
     "commute": {
         "label": "通勤 / 走路",
         "description": "旋律好入口、情緒不太重，適合在路上輕鬆聽。",
-        "artists": ["Ed Sheeran", "NewJeans", "告五人", "Taylor Swift", "Ariana Grande"],
+        "artists": ["Ed Sheeran", "NewJeans", "告五人", "Ariana Grande", "Maroon 5"],
         "tags": ["pop", "indie", "easy listening"]
     },
     "sad": {
         "label": "失戀 / 難過",
         "description": "歌詞情緒感強，適合想整理心情或被音樂陪伴的時候。",
-        "artists": ["Adele", "Taylor Swift", "田馥甄", "Joji", "Billie Eilish"],
+        "artists": ["Adele", "Taylor Swift", "田馥甄", "Joji", "Olivia Rodrigo"],
         "tags": ["ballad", "sad pop", "singer-songwriter"]
     },
     "night": {
         "label": "睡前 / 深夜",
         "description": "聲音柔和、氛圍放鬆，適合睡前、深夜或一個人放空。",
-        "artists": ["Laufey", "Keshi", "Frank Ocean", "Billie Eilish", "Aimer"],
+        "artists": ["Frank Ocean", "Billie Eilish", "Aimer", "SZA", "Cigarettes After Sex"],
         "tags": ["jazz pop", "r&b", "ambient", "slow"]
     },
     "rainy": {
         "label": "下雨天",
         "description": "帶一點電影感和情緒厚度，適合雨天、咖啡廳或窗邊時間。",
-        "artists": ["周杰倫", "deca joins", "告五人", "Aimer", "Lana Del Rey"],
+        "artists": ["deca joins", "Lana Del Rey", "Bon Iver", "Radiohead", "落日飛車"],
         "tags": ["indie", "city pop", "ballad", "dream pop"]
     }
 }
