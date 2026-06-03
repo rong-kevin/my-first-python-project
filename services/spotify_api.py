@@ -75,43 +75,63 @@ def search_artist(artist_name):
     }
 
 
+def fallback_artist_preview(artist_name):
+    return {
+        "name": artist_name,
+        "image": None,
+        "spotify_url": "#"
+    }
+
+
+def build_artist_preview(artist_name, token):
+    search_url = "https://api.spotify.com/v1/search"
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+    params = {
+        "q": artist_name,
+        "type": "artist",
+        "limit": 1
+    }
+
+    response = requests.get(search_url, headers=headers, params=params, timeout=10)
+    response.raise_for_status()
+
+    items = response.json().get("artists", {}).get("items", [])
+    if not items:
+        return fallback_artist_preview(artist_name)
+
+    artist = items[0]
+    return {
+        "name": artist.get("name", artist_name),
+        "image": artist.get("images", [{}])[0].get("url") if artist.get("images") else None,
+        "spotify_url": artist.get("external_urls", {}).get("spotify", "#")
+    }
+
+
 @lru_cache(maxsize=64)
 def get_artist_preview(artist_name):
     try:
         token = get_access_token()
-        search_url = "https://api.spotify.com/v1/search"
-        headers = {
-            "Authorization": f"Bearer {token}"
-        }
-        params = {
-            "q": artist_name,
-            "type": "artist",
-            "limit": 1
-        }
-
-        response = requests.get(search_url, headers=headers, params=params, timeout=10)
-        response.raise_for_status()
-
-        items = response.json().get("artists", {}).get("items", [])
-        if not items:
-            raise ValueError("artist not found")
-
-        artist = items[0]
-        return {
-            "name": artist.get("name", artist_name),
-            "image": artist.get("images", [{}])[0].get("url") if artist.get("images") else None,
-            "spotify_url": artist.get("external_urls", {}).get("spotify", "#")
-        }
+        return build_artist_preview(artist_name, token)
     except Exception:
-        return {
-            "name": artist_name,
-            "image": None,
-            "spotify_url": "#"
-        }
+        return fallback_artist_preview(artist_name)
 
 
 def get_artist_previews(artist_names):
-    return [get_artist_preview(artist_name) for artist_name in artist_names]
+    try:
+        token = get_access_token()
+    except Exception:
+        return [fallback_artist_preview(artist_name) for artist_name in artist_names]
+
+    previews = []
+    for artist_name in artist_names:
+        try:
+            previews.append(build_artist_preview(artist_name, token))
+        except Exception:
+            previews.append(fallback_artist_preview(artist_name))
+
+    return previews
 
 
 def get_artist_top_tracks(artist_name):
