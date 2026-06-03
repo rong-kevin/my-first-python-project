@@ -2,6 +2,7 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>情境音樂推薦</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -21,7 +22,7 @@
                 {% for mood_key, mood in moods.items() %}
                     <a
                         href="/mood?type={{ mood_key }}"
-                        class="mood-option {% if selected_mood == mood_key %}active{% endif %}">
+                        class="mood-option mood-loading-link {% if selected_mood == mood_key %}active{% endif %}">
                         {{ mood.label }}
                     </a>
                 {% endfor %}
@@ -31,11 +32,11 @@
                 <div class="loading-disc"></div>
                 <div>
                     <strong>正在建立音樂探索卡</strong>
-                    <p>同步整理歌手資料、風格標籤與生平簡介，請稍候。</p>
+                    <p>正在替這個情境挑選下一組不重複的推薦歌手。</p>
                     <div class="loading-sources">
-                        <span>Spotify</span>
-                        <span>Last.fm</span>
-                        <span>Wikipedia</span>
+                        <span>情境分析</span>
+                        <span>推薦輪替</span>
+                        <span>歌手資料</span>
                     </div>
                 </div>
             </div>
@@ -44,7 +45,7 @@
                 <div class="section-card mood-result">
                     <div class="mood-result-header">
                         <h2>{{ selected_recommendation.label }}</h2>
-                        <a href="/mood?type={{ selected_mood }}" class="secondary-btn refresh-mood-btn">換一組推薦</a>
+                        <a href="/mood?type={{ selected_mood }}" class="secondary-btn refresh-mood-btn mood-loading-link">換一組推薦</a>
                     </div>
                     <p class="bio-text">{{ selected_recommendation.description }}</p>
 
@@ -75,13 +76,13 @@
 
     <script>
         const loadingPanel = document.getElementById('loadingPanel');
-        const artistLinks = document.querySelectorAll('.artist-loading-link');
+        const loadingLinks = document.querySelectorAll('.artist-loading-link, .mood-loading-link');
 
         function showLoading() {
             loadingPanel.classList.add('visible');
         }
 
-        artistLinks.forEach((link) => {
+        loadingLinks.forEach((link) => {
             link.addEventListener('click', showLoading);
         });
     </script>
