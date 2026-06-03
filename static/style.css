@@ -3,136 +3,110 @@
 }
 
 body {
+    background:
+        radial-gradient(circle at 16% 12%, rgba(29, 185, 84, 0.14), transparent 26%),
+        radial-gradient(circle at 82% 4%, rgba(214, 76, 24, 0.18), transparent 28%),
+        linear-gradient(180deg, #070707 0%, #111 54%, #070707 100%);
+    color: #f4f4f4;
     font-family: Arial, "Microsoft JhengHei", sans-serif;
-    background: linear-gradient(180deg, #f5f5f5 0%, #ececec 100%);
-    color: #222;
     margin: 0;
+    min-height: 100vh;
     padding: 0;
 }
 
 .container {
     max-width: 1180px;
     margin: 0 auto;
-    padding: 40px 20px 60px;
+    padding: 40px 20px 64px;
 }
 
-/* ===== 首頁 Hero ===== */
-.hero {
-    min-height: 100vh;
-}
-
-.hero-card {
-    background: white;
-    padding: 48px;
-    border-radius: 24px;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-    margin-top: 40px;
-}
-
-.hero-card h1 {
-    margin: 0 0 16px;
-    font-size: 56px;
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-.subtitle {
-    font-size: 22px;
-    color: #555;
-    margin-bottom: 32px;
-    line-height: 1.7;
-}
-
-.search-box {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    align-items: center;
-    margin-top: 20px;
-}
-
-.search-box input {
-    flex: 1;
-    min-width: 260px;
-    padding: 16px 18px;
-    font-size: 20px;
-    border: 1px solid #ccc;
-    border-radius: 12px;
-    outline: none;
-    background: #fafafa;
-}
-
-.search-box input:focus {
-    border-color: #1db954;
-    box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.15);
-    background: white;
-}
-
-.search-box button,
-.secondary-btn {
-    padding: 16px 24px;
-    font-size: 18px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
+a {
+    color: #1ed760;
     text-decoration: none;
-    display: inline-block;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.back-link {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    color: #f4f4f4;
+    display: inline-flex;
+    font-weight: 800;
+    margin-bottom: 22px;
+    padding: 10px 14px;
     transition: 0.2s ease;
 }
 
-.search-box button {
-    background-color: #1db954;
-    color: white;
-    font-weight: 600;
-}
-
-.search-box button:hover {
-    background-color: #169c46;
+.back-link:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
     transform: translateY(-1px);
 }
 
-.search-box button:disabled {
-    background-color: #8fd9aa;
-    cursor: wait;
-    transform: none;
+.page-card {
+    background: rgba(18, 18, 18, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 24px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
+    margin-top: 24px;
+    padding: 36px;
+}
+
+.section-card {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 20px;
+    margin-top: 28px;
+    padding: 24px;
+}
+
+.section-card h2 {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 30px;
+    margin: 0 0 18px;
+    padding-bottom: 12px;
+}
+
+.bio-text {
+    color: rgba(255, 255, 255, 0.74);
+    font-size: 18px;
+    line-height: 1.9;
 }
 
 .secondary-btn {
-    background-color: #f0f0f0;
-    color: #333;
+    background: #1ed760;
+    border: none;
+    border-radius: 999px;
+    color: #061008;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 900;
+    padding: 12px 18px;
+    text-decoration: none;
+    transition: 0.2s ease;
 }
 
 .secondary-btn:hover {
-    background-color: #e2e2e2;
+    background: #35ea75;
+    color: #061008;
     transform: translateY(-1px);
 }
 
-.mood-btn {
-    background: #222;
-    color: white;
-}
-
-.mood-btn:hover {
-    background: #000;
-    color: white;
-}
-
-.discover-btn {
-    background: #f5efe4;
-    color: #4b3218;
-}
-
-.discover-btn:hover {
-    background: #eadcc8;
-    color: #2b1c0d;
-}
-
+/* ===== Loading ===== */
 .loading-panel {
     align-items: center;
-    background: #f7fff9;
-    border: 1px solid rgba(29, 185, 84, 0.22);
+    background: rgba(13, 27, 17, 0.92);
+    border: 1px solid rgba(30, 215, 96, 0.32);
     border-radius: 18px;
-    box-shadow: 0 8px 22px rgba(29, 185, 84, 0.10);
+    box-shadow: 0 10px 28px rgba(29, 185, 84, 0.12);
+    color: #fff;
     display: none;
     gap: 18px;
     margin-top: 18px;
@@ -147,7 +121,7 @@ body {
     animation: spin 1.1s linear infinite;
     background:
         radial-gradient(circle at center, white 0 20%, transparent 21%),
-        conic-gradient(#1db954, #222, #1db954);
+        conic-gradient(#1ed760, #fff, #1ed760);
     border-radius: 50%;
     flex: 0 0 52px;
     height: 52px;
@@ -156,7 +130,7 @@ body {
 }
 
 .loading-disc::after {
-    background: white;
+    background: #0f0f0f;
     border-radius: 50%;
     content: "";
     height: 10px;
@@ -173,7 +147,7 @@ body {
 }
 
 .loading-panel p {
-    color: #555;
+    color: rgba(255, 255, 255, 0.68);
     line-height: 1.6;
     margin: 0 0 10px;
 }
@@ -185,12 +159,12 @@ body {
 }
 
 .loading-sources span {
-    background: white;
-    border: 1px solid #ddf2e4;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
-    color: #176d34;
+    color: #9ef3b9;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 800;
     padding: 6px 10px;
 }
 
@@ -204,123 +178,21 @@ body {
     }
 }
 
-.popular-searches {
-    margin-top: 32px;
-}
-
-.popular-searches p {
-    font-size: 18px;
-    margin-bottom: 12px;
-    color: #555;
-}
-
-.tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.tag {
-    display: inline-block;
-    background: #f4f4f4;
-    color: #333;
-    padding: 10px 16px;
-    border-radius: 999px;
-    text-decoration: none;
-    font-size: 16px;
-    transition: 0.2s;
-}
-
-.tag:hover {
-    background: #1db954;
-    color: white;
-    text-decoration: none;
-}
-
-.features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    margin-top: 32px;
-}
-
-.feature-card {
-    background: white;
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-}
-
-.feature-card h3 {
-    margin-top: 0;
-    font-size: 24px;
-    margin-bottom: 12px;
-}
-
-.feature-card p {
-    margin: 0;
-    color: #555;
-    line-height: 1.6;
-}
-
-/* ===== 共用 ===== */
-a {
-    color: #1db954;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-.back-link {
-    display: inline-block;
-    margin-bottom: 22px;
-    font-weight: 600;
-}
-
-.page-card {
-    background: white;
-    border-radius: 24px;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-    padding: 36px;
-    margin-top: 24px;
-}
-
-.section-card {
-    background: #fafafa;
-    border: 1px solid #eee;
-    border-radius: 18px;
-    padding: 24px;
-    margin-top: 28px;
-}
-
-.section-card h2 {
-    margin: 0 0 18px;
-    font-size: 30px;
-    border-bottom: 2px solid #e5e5e5;
-    padding-bottom: 10px;
-}
-
-.bio-text {
-    font-size: 18px;
-    line-height: 1.9;
-    color: #444;
-}
-
-/* ===== 歌手頁 ===== */
+/* ===== Artist page ===== */
 .artist-page-card {
     overflow: hidden;
 }
 
 .artist-hero {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 32px;
     align-items: stretch;
-    background: linear-gradient(135deg, #f7fff9 0%, #ffffff 58%, #f5efe4 100%);
-    border: 1px solid #edf3ee;
+    background:
+        radial-gradient(circle at 92% 8%, rgba(214, 76, 24, 0.28), transparent 34%),
+        linear-gradient(135deg, rgba(30, 215, 96, 0.16) 0%, rgba(255, 255, 255, 0.07) 54%, rgba(255, 255, 255, 0.04) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 22px;
+    display: grid;
+    gap: 32px;
+    grid-template-columns: 300px 1fr;
     padding: 24px;
 }
 
@@ -331,13 +203,13 @@ a:hover {
 }
 
 .artist-image {
-    width: 100%;
-    max-width: 300px;
     aspect-ratio: 1;
     border-radius: 20px;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38);
     display: block;
+    max-width: 300px;
     object-fit: cover;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    width: 100%;
 }
 
 .artist-overview {
@@ -347,18 +219,19 @@ a:hover {
 }
 
 .eyebrow {
-    color: #176d34;
+    color: #1ed760;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 900;
     letter-spacing: 0;
     margin: 0 0 10px;
     text-transform: uppercase;
 }
 
 .artist-title {
-    margin: 0 0 18px;
+    color: #fff;
     font-size: 54px;
     line-height: 1.15;
+    margin: 0 0 18px;
 }
 
 .artist-tag-list {
@@ -368,13 +241,15 @@ a:hover {
     margin-bottom: 20px;
 }
 
-.artist-tag-list span {
-    background: white;
-    border: 1px solid #ddf2e4;
+.artist-tag-list span,
+.mood-tags span,
+.discover-tabs span {
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
-    color: #176d34;
+    color: #b8f7c8;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 800;
     padding: 8px 12px;
 }
 
@@ -386,44 +261,47 @@ a:hover {
 }
 
 .spotify-link {
+    background: #1ed760;
+    border-radius: 999px;
+    color: #061008;
     display: inline-block;
-    background: #1db954;
-    color: white;
+    font-weight: 900;
     padding: 12px 18px;
-    border-radius: 12px;
-    font-weight: 600;
     width: fit-content;
 }
 
 .spotify-link:hover {
-    background: #169c46;
-    color: white;
-    text-decoration: none;
+    background: #35ea75;
+    color: #061008;
 }
 
 .artist-stat-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(120px, 1fr));
     gap: 12px;
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
 }
 
 .artist-stat-card {
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid #e8eee9;
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 16px;
     padding: 16px;
 }
 
 .artist-stat-card strong {
+    color: #fff;
     display: block;
     font-size: 28px;
     line-height: 1;
     margin-bottom: 8px;
 }
 
-.artist-stat-card span {
-    color: #666;
-    font-size: 15px;
+.artist-stat-card span,
+.section-title-row p,
+.chart-note,
+.album-empty,
+.empty-state p {
+    color: rgba(255, 255, 255, 0.64);
 }
 
 .artist-loading-panel {
@@ -432,8 +310,8 @@ a:hover {
 
 .artist-content-grid {
     display: grid;
-    grid-template-columns: minmax(320px, 0.9fr) minmax(320px, 1.1fr);
     gap: 24px;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(320px, 1.1fr);
 }
 
 .spotify-section,
@@ -442,24 +320,23 @@ a:hover {
 }
 
 .spotify-embed {
-    width: 100%;
-    height: 352px;
     border: none;
     border-radius: 16px;
+    height: 352px;
+    width: 100%;
 }
 
 .chart-note {
-    color: #666;
     font-size: 16px;
     line-height: 1.7;
     margin: 0 0 14px;
 }
 
 .chart-wrapper {
-    background: white;
+    background: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 18px;
     padding: 16px 14px 6px;
-    border: 1px solid #eee;
 }
 
 .section-title-row {
@@ -474,13 +351,6 @@ a:hover {
     margin-bottom: 8px;
 }
 
-.section-title-row p {
-    color: #666;
-    font-size: 16px;
-    line-height: 1.6;
-    margin: 0;
-}
-
 .discography-toolbar {
     display: flex;
     flex: 0 0 auto;
@@ -489,22 +359,22 @@ a:hover {
 }
 
 .filter-btn {
-    background: white;
-    border: 1px solid #e2e2e2;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 999px;
-    color: #333;
+    color: #fff;
     cursor: pointer;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 800;
     padding: 9px 14px;
     transition: 0.2s ease;
 }
 
 .filter-btn:hover,
 .filter-btn.active {
-    background: #1db954;
-    border-color: #1db954;
-    color: white;
+    background: #1ed760;
+    border-color: #1ed760;
+    color: #061008;
 }
 
 .album-list {
@@ -517,8 +387,8 @@ a:hover {
 
 .album-row {
     align-items: center;
-    background: white;
-    border: 1px solid #ececec;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.10);
     border-radius: 14px;
     display: flex;
     gap: 14px;
@@ -533,13 +403,14 @@ a:hover {
 }
 
 .album-row strong {
+    color: #fff;
     display: block;
     font-size: 17px;
     margin-bottom: 4px;
 }
 
 .album-row span {
-    color: #666;
+    color: rgba(255, 255, 255, 0.64);
     font-size: 14px;
 }
 
@@ -547,22 +418,21 @@ a:hover {
     border-radius: 999px;
     flex: 0 0 auto;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 900;
     padding: 7px 11px;
 }
 
 .type-pill.album {
-    background: #e9f8ee;
-    color: #176d34;
+    background: rgba(30, 215, 96, 0.18);
+    color: #9ef3b9;
 }
 
 .type-pill.single {
-    background: #efefef;
-    color: #222;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
 }
 
 .album-empty {
-    color: #666;
     display: none;
     margin: 16px 0 0;
 }
@@ -571,68 +441,66 @@ a:hover {
     display: block;
 }
 
-.similar-section .recommendation-grid {
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-}
-
 .empty-state {
-    text-align: center;
     padding: 80px 20px;
+    text-align: center;
 }
 
 .empty-state h1 {
+    color: #fff;
     font-size: 42px;
     line-height: 1.3;
     margin: 0 0 14px;
 }
 
-.empty-state p {
-    color: #666;
-    font-size: 18px;
-    line-height: 1.7;
-    margin: 0;
-}
-
-/* ===== 情境推薦頁 ===== */
+/* ===== Mood / discover pages ===== */
 .mood-header h1 {
-    margin: 0 0 14px;
+    color: #fff;
     font-size: 48px;
     line-height: 1.2;
+    margin: 0 0 14px;
 }
 
 .mood-header p {
-    margin: 0;
-    color: #555;
+    color: rgba(255, 255, 255, 0.70);
     font-size: 20px;
     line-height: 1.7;
+    margin: 0;
 }
 
 .mood-options {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     margin-top: 30px;
 }
 
 .mood-option {
-    background: #f4f4f4;
-    color: #222;
-    border: 1px solid #e4e4e4;
-    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 900;
     padding: 16px 18px;
     text-align: center;
-    font-size: 18px;
-    font-weight: 700;
     transition: 0.2s ease;
 }
 
 .mood-option:hover,
 .mood-option.active {
-    background: #1db954;
-    border-color: #1db954;
-    color: white;
-    text-decoration: none;
-    transform: translateY(-1px);
+    background: #1ed760;
+    border-color: #1ed760;
+    color: #061008;
+    transform: translateY(-2px);
+}
+
+.mood-result,
+.discover-result,
+.discover-empty {
+    background:
+        radial-gradient(circle at 92% 0%, rgba(214, 76, 24, 0.20), transparent 30%),
+        rgba(255, 255, 255, 0.07);
 }
 
 .mood-result-header {
@@ -653,8 +521,9 @@ a:hover {
 }
 
 .mood-result h3 {
-    margin: 26px 0 14px;
+    color: #fff;
     font-size: 24px;
+    margin: 26px 0 14px;
 }
 
 .mood-tags {
@@ -664,26 +533,17 @@ a:hover {
     margin-top: 18px;
 }
 
-.mood-tags span {
-    background: white;
-    border: 1px solid #e2e2e2;
-    border-radius: 999px;
-    color: #333;
-    padding: 8px 14px;
-    font-size: 15px;
-}
-
 .recommendation-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .recommendation-card {
-    background: white;
-    border: 1px solid #e7e7e7;
-    border-radius: 16px;
-    color: #222;
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    color: #fff;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -693,18 +553,19 @@ a:hover {
 }
 
 .recommendation-card strong {
+    color: #fff;
     font-size: 21px;
 }
 
 .recommendation-card span {
-    color: #666;
+    color: rgba(255, 255, 255, 0.62);
     font-size: 15px;
 }
 
 .recommendation-card:hover {
-    border-color: #1db954;
-    box-shadow: 0 8px 18px rgba(29, 185, 84, 0.14);
-    text-decoration: none;
+    background: rgba(30, 215, 96, 0.13);
+    border-color: rgba(30, 215, 96, 0.42);
+    box-shadow: 0 12px 24px rgba(29, 185, 84, 0.14);
     transform: translateY(-2px);
 }
 
@@ -712,9 +573,8 @@ a:hover {
     text-align: center;
 }
 
-/* ===== 風格探索頁 ===== */
 .discover-header h1 {
-    color: #2b1c0d;
+    color: #fff;
 }
 
 .discover-tabs {
@@ -725,53 +585,29 @@ a:hover {
 }
 
 .discover-tabs span {
-    background: #f5efe4;
-    border: 1px solid #eadcc8;
-    border-radius: 999px;
-    color: #4b3218;
-    font-weight: 700;
-    padding: 8px 14px;
+    color: #ffd2b2;
 }
 
 .discover-options .mood-option:hover,
 .discover-options .mood-option.active {
-    background: #4b3218;
-    border-color: #4b3218;
-}
-
-.discover-result {
-    background: #fffaf2;
-    border-color: #eadcc8;
+    background: #ff8b40;
+    border-color: #ff8b40;
+    color: #140a03;
 }
 
 .discover-result .recommendation-card:hover {
-    border-color: #4b3218;
-    box-shadow: 0 8px 18px rgba(75, 50, 24, 0.14);
-}
-
-.discover-empty {
-    background: #fffaf2;
+    background: rgba(255, 139, 64, 0.14);
+    border-color: rgba(255, 139, 64, 0.46);
+    box-shadow: 0 12px 24px rgba(255, 139, 64, 0.12);
 }
 
 @media (max-width: 900px) {
-    .hero-card {
-        padding: 30px;
-    }
-
-    .hero-card h1 {
-        font-size: 40px;
-    }
-
-    .subtitle {
-        font-size: 18px;
+    .container {
+        padding: 24px 16px 44px;
     }
 
     .page-card {
-        padding: 24px;
-    }
-
-    .search-box input {
-        min-width: 100%;
+        padding: 22px;
     }
 
     .loading-panel.visible {
