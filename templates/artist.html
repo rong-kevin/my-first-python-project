@@ -2,6 +2,7 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>歌手資料頁</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -39,7 +40,7 @@
                         </div>
 
                         <div class="artist-actions">
-                            <a href="{{ artist.spotify_url }}" target="_blank" class="spotify-link">
+                            <a href="{{ artist.spotify_url }}" target="_blank" rel="noopener noreferrer" class="spotify-link">
                                 在 Spotify 開啟
                             </a>
                         </div>
@@ -74,6 +75,37 @@
                     </div>
                 </div>
 
+                <div class="section-card style-insight-section">
+                    <div class="section-title-row">
+                        <div>
+                            <h2>風格說明</h2>
+                            <p>根據 Last.fm 標籤整理，幫你理解這位歌手常被歸類的音樂方向。</p>
+                        </div>
+                    </div>
+
+                    {% if style_insights.tags %}
+                        <div class="style-insight-grid">
+                            {% for item in style_insights.tags %}
+                                <div class="style-insight-card">
+                                    <strong>{{ item.name }}</strong>
+                                    <p>{{ item.description }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="bio-text">暫時沒有足夠的風格標籤可以整理說明。</p>
+                    {% endif %}
+
+                    {% if style_insights.similar_artists %}
+                        <h3 class="mini-section-title">相似風格歌手</h3>
+                        <div class="similar-chip-row">
+                            {% for similar in style_insights.similar_artists %}
+                                <a href="/artist?name={{ similar }}" class="similar-chip artist-loading-link">{{ similar }}</a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
                 <div class="artist-content-grid">
                     <div class="section-card spotify-section">
                         <h2>Spotify 播放器</h2>
@@ -92,9 +124,29 @@
                     </div>
                 </div>
 
-                <div class="section-card">
+                <div class="section-card chart-section">
                     <h2>作品年份分布圖</h2>
                     <p class="chart-note">依 Spotify 作品類型區分專輯與單曲，方便比較不同年份的發行重點。</p>
+
+                    <div class="chart-summary-grid">
+                        <div class="chart-summary-card">
+                            <strong>{{ chart_summary.total }}</strong>
+                            <span>全部作品</span>
+                        </div>
+                        <div class="chart-summary-card">
+                            <strong>{{ chart_summary.albums }}</strong>
+                            <span>專輯</span>
+                        </div>
+                        <div class="chart-summary-card">
+                            <strong>{{ chart_summary.singles }}</strong>
+                            <span>單曲</span>
+                        </div>
+                        <div class="chart-summary-card">
+                            <strong>{{ chart_summary.most_active_year }}</strong>
+                            <span>最活躍年份</span>
+                        </div>
+                    </div>
+
                     <div class="chart-wrapper">
                         <canvas id="yearChart"></canvas>
                     </div>
@@ -104,7 +156,7 @@
                     <div class="section-title-row">
                         <div>
                             <h2>專輯 / 單曲</h2>
-                            <p>可以切換查看全部作品、專輯或單曲。</p>
+                            <p>可以切換查看全部作品、專輯或單曲，作品名稱可以直接開 Spotify。</p>
                         </div>
                         <div class="discography-toolbar" aria-label="作品類型篩選">
                             <button type="button" class="filter-btn active" data-filter="all">全部</button>
@@ -116,15 +168,26 @@
                     <ul class="album-list" id="albumList">
                         {% for album in albums %}
                             <li class="album-row" data-type="{{ album.album_type }}">
-                                <div>
-                                    <strong>{{ album.name }}</strong>
+                                <div class="album-main">
+                                    {% if album.spotify_url and album.spotify_url != '#' %}
+                                        <a href="{{ album.spotify_url }}" target="_blank" rel="noopener noreferrer" class="album-title">{{ album.name }}</a>
+                                    {% else %}
+                                        <strong>{{ album.name }}</strong>
+                                    {% endif %}
                                     <span>發行日：{{ album.release_date }}</span>
                                 </div>
-                                {% if album.album_type == 'single' %}
-                                    <span class="type-pill single">單曲</span>
-                                {% else %}
-                                    <span class="type-pill album">專輯</span>
-                                {% endif %}
+
+                                <div class="album-actions">
+                                    {% if album.album_type == 'single' %}
+                                        <span class="type-pill single">單曲</span>
+                                    {% else %}
+                                        <span class="type-pill album">專輯</span>
+                                    {% endif %}
+
+                                    {% if album.spotify_url and album.spotify_url != '#' %}
+                                        <a href="{{ album.spotify_url }}" target="_blank" rel="noopener noreferrer" class="spotify-album-link">在 Spotify 開啟</a>
+                                    {% endif %}
+                                </div>
                             </li>
                         {% endfor %}
                     </ul>
@@ -152,6 +215,9 @@
                     const albumValues = {{ album_chart_values | tojson }};
                     const singleValues = {{ single_chart_values | tojson }};
 
+                    Chart.defaults.color = 'rgba(255, 255, 255, 0.72)';
+                    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.12)';
+
                     const ctx = document.getElementById('yearChart').getContext('2d');
                     new Chart(ctx, {
                         type: 'bar',
@@ -161,29 +227,51 @@
                                 {
                                     label: '專輯',
                                     data: albumValues,
-                                    backgroundColor: '#1db954',
-                                    borderRadius: 8,
+                                    backgroundColor: '#1ed760',
+                                    borderRadius: 10,
                                     borderWidth: 0
                                 },
                                 {
                                     label: '單曲',
                                     data: singleValues,
-                                    backgroundColor: '#222222',
-                                    borderRadius: 8,
+                                    backgroundColor: '#ff8b40',
+                                    borderRadius: 10,
                                     borderWidth: 0
                                 }
                             ]
                         },
                         options: {
                             responsive: true,
+                            maintainAspectRatio: false,
                             plugins: {
                                 legend: {
-                                    display: true
+                                    display: true,
+                                    labels: {
+                                        color: 'rgba(255, 255, 255, 0.82)',
+                                        font: {
+                                            weight: 'bold'
+                                        },
+                                        padding: 18
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(12, 12, 12, 0.96)',
+                                    borderColor: 'rgba(255, 255, 255, 0.14)',
+                                    borderWidth: 1,
+                                    titleColor: '#fff',
+                                    bodyColor: 'rgba(255, 255, 255, 0.82)',
+                                    callbacks: {
+                                        title: (items) => `${items[0].label} 年`,
+                                        label: (context) => `${context.dataset.label}：${context.parsed.y} 件作品`
+                                    }
                                 }
                             },
                             scales: {
                                 x: {
                                     stacked: true,
+                                    ticks: {
+                                        color: 'rgba(255, 255, 255, 0.72)'
+                                    },
                                     grid: {
                                         display: false
                                     }
@@ -192,7 +280,11 @@
                                     beginAtZero: true,
                                     stacked: true,
                                     ticks: {
+                                        color: 'rgba(255, 255, 255, 0.72)',
                                         precision: 0
+                                    },
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.10)'
                                     }
                                 }
                             }
