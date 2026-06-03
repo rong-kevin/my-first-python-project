@@ -229,7 +229,8 @@ def get_artist_albums(artist_name):
         result.append({
             "name": album_name,
             "release_date": album.get("release_date", "無資料"),
-            "album_type": album.get("album_type", "album")
+            "album_type": album.get("album_type", "album"),
+            "spotify_url": album.get("external_urls", {}).get("spotify", "#")
         })
 
     return result
