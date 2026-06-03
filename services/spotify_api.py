@@ -1,5 +1,7 @@
 import base64
 import os
+from functools import lru_cache
+
 import requests
 from dotenv import load_dotenv
 
@@ -72,6 +74,46 @@ def search_artist(artist_name):
         "embed_url": embed_url
     }
 
+
+@lru_cache(maxsize=64)
+def get_artist_preview(artist_name):
+    try:
+        token = get_access_token()
+        search_url = "https://api.spotify.com/v1/search"
+        headers = {
+            "Authorization": f"Bearer {token}"
+        }
+        params = {
+            "q": artist_name,
+            "type": "artist",
+            "limit": 1
+        }
+
+        response = requests.get(search_url, headers=headers, params=params, timeout=10)
+        response.raise_for_status()
+
+        items = response.json().get("artists", {}).get("items", [])
+        if not items:
+            raise ValueError("artist not found")
+
+        artist = items[0]
+        return {
+            "name": artist.get("name", artist_name),
+            "image": artist.get("images", [{}])[0].get("url") if artist.get("images") else None,
+            "spotify_url": artist.get("external_urls", {}).get("spotify", "#")
+        }
+    except Exception:
+        return {
+            "name": artist_name,
+            "image": None,
+            "spotify_url": "#"
+        }
+
+
+def get_artist_previews(artist_names):
+    return [get_artist_preview(artist_name) for artist_name in artist_names]
+
+
 def get_artist_top_tracks(artist_name):
     token = get_access_token()
 
@@ -114,6 +156,8 @@ def get_artist_top_tracks(artist_name):
         }
         for track in tracks[:5]
     ]
+
+
 def get_artist_albums(artist_name):
     token = get_access_token()
 
