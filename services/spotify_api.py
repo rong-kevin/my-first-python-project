@@ -11,6 +11,7 @@ CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 
 
+@lru_cache(maxsize=1)
 def get_access_token():
     auth_string = f"{CLIENT_ID}:{CLIENT_SECRET}"
     auth_bytes = auth_string.encode("utf-8")
