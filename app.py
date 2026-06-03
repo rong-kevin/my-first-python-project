@@ -4,7 +4,7 @@ from collections import Counter
 from itertools import combinations
 
 from flask import Flask, render_template, request, redirect, session, url_for
-from services.spotify_api import search_artist, get_artist_albums
+from services.spotify_api import search_artist, get_artist_albums, get_artist_previews
 from services.lastfm_api import get_similar_artists, get_artist_tags
 from services.wiki_scraper import get_artist_bio
 
@@ -172,7 +172,12 @@ def build_discover_recommendation(filter_key):
 
 @app.route("/")
 def home():
-    return render_template("index.html", popular_artists=POPULAR_ARTISTS)
+    popular_artist_cards = get_artist_previews(POPULAR_ARTISTS)
+    return render_template(
+        "index.html",
+        popular_artists=POPULAR_ARTISTS,
+        popular_artist_cards=popular_artist_cards
+    )
 
 
 @app.route("/random")
