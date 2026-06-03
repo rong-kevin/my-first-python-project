@@ -5,8 +5,8 @@
 body {
     background:
         radial-gradient(circle at 16% 12%, rgba(29, 185, 84, 0.14), transparent 26%),
-        radial-gradient(circle at 82% 4%, rgba(214, 76, 24, 0.18), transparent 28%),
-        linear-gradient(180deg, #070707 0%, #111 54%, #070707 100%);
+        radial-gradient(circle at 82% 4%, rgba(255, 139, 64, 0.16), transparent 28%),
+        linear-gradient(180deg, #070707 0%, #121212 54%, #070707 100%);
     color: #f4f4f4;
     font-family: Arial, "Microsoft JhengHei", sans-serif;
     margin: 0;
@@ -69,37 +69,48 @@ a:hover {
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     color: #fff;
     font-size: 30px;
+    line-height: 1.25;
     margin: 0 0 18px;
     padding-bottom: 12px;
 }
 
+.bio-text,
+.chart-note,
+.section-title-row p,
+.album-empty,
+.empty-state p {
+    color: rgba(255, 255, 255, 0.68);
+}
+
 .bio-text {
-    color: rgba(255, 255, 255, 0.74);
     font-size: 18px;
     line-height: 1.9;
 }
 
-.secondary-btn {
+.secondary-btn,
+.spotify-link,
+.spotify-album-link {
     background: #1ed760;
     border: none;
     border-radius: 999px;
     color: #061008;
     cursor: pointer;
-    display: inline-block;
-    font-size: 16px;
+    display: inline-flex;
     font-weight: 900;
+    justify-content: center;
+    line-height: 1.2;
     padding: 12px 18px;
-    text-decoration: none;
     transition: 0.2s ease;
 }
 
-.secondary-btn:hover {
+.secondary-btn:hover,
+.spotify-link:hover,
+.spotify-album-link:hover {
     background: #35ea75;
     color: #061008;
     transform: translateY(-1px);
 }
 
-/* ===== Loading ===== */
 .loading-panel {
     align-items: center;
     background: rgba(13, 27, 17, 0.92);
@@ -158,27 +169,24 @@ a:hover {
     gap: 8px;
 }
 
-.loading-sources span {
-    background: rgba(255, 255, 255, 0.08);
+.loading-sources span,
+.artist-tag-list span,
+.mood-tags span,
+.discover-tabs span {
+    background: rgba(255, 255, 255, 0.09);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
-    color: #9ef3b9;
-    font-size: 13px;
+    color: #b8f7c8;
+    font-size: 14px;
     font-weight: 800;
-    padding: 6px 10px;
+    padding: 8px 12px;
 }
 
 @keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-/* ===== Artist page ===== */
 .artist-page-card {
     overflow: hidden;
 }
@@ -186,7 +194,7 @@ a:hover {
 .artist-hero {
     align-items: stretch;
     background:
-        radial-gradient(circle at 92% 8%, rgba(214, 76, 24, 0.28), transparent 34%),
+        radial-gradient(circle at 92% 8%, rgba(255, 139, 64, 0.28), transparent 34%),
         linear-gradient(135deg, rgba(30, 215, 96, 0.16) 0%, rgba(255, 255, 255, 0.07) 54%, rgba(255, 255, 255, 0.04) 100%);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 22px;
@@ -234,61 +242,43 @@ a:hover {
     margin: 0 0 18px;
 }
 
-.artist-tag-list {
+.artist-tag-list,
+.artist-actions,
+.mood-tags,
+.discover-tabs,
+.similar-chip-row {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-bottom: 20px;
 }
 
-.artist-tag-list span,
-.mood-tags span,
-.discover-tabs span {
-    background: rgba(255, 255, 255, 0.09);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 999px;
-    color: #b8f7c8;
-    font-size: 15px;
-    font-weight: 800;
-    padding: 8px 12px;
-}
-
+.artist-tag-list,
 .artist-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
     margin-bottom: 20px;
 }
 
-.spotify-link {
-    background: #1ed760;
-    border-radius: 999px;
-    color: #061008;
-    display: inline-block;
-    font-weight: 900;
-    padding: 12px 18px;
-    width: fit-content;
-}
-
-.spotify-link:hover {
-    background: #35ea75;
-    color: #061008;
+.artist-stat-grid,
+.chart-summary-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
 }
 
 .artist-stat-grid {
-    display: grid;
-    gap: 12px;
     grid-template-columns: repeat(3, minmax(120px, 1fr));
 }
 
-.artist-stat-card {
+.artist-stat-card,
+.chart-summary-card,
+.style-insight-card {
     background: rgba(255, 255, 255, 0.09);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 16px;
     padding: 16px;
 }
 
-.artist-stat-card strong {
+.artist-stat-card strong,
+.chart-summary-card strong {
     color: #fff;
     display: block;
     font-size: 28px;
@@ -297,15 +287,55 @@ a:hover {
 }
 
 .artist-stat-card span,
-.section-title-row p,
-.chart-note,
-.album-empty,
-.empty-state p {
+.chart-summary-card span {
     color: rgba(255, 255, 255, 0.64);
 }
 
-.artist-loading-panel {
-    margin-top: 22px;
+.style-insight-section {
+    background:
+        radial-gradient(circle at 100% 0%, rgba(30, 215, 96, 0.12), transparent 32%),
+        rgba(255, 255, 255, 0.07);
+}
+
+.style-insight-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.style-insight-card strong {
+    color: #fff;
+    display: block;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.style-insight-card p {
+    color: rgba(255, 255, 255, 0.68);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.mini-section-title {
+    color: #fff;
+    font-size: 20px;
+    margin: 22px 0 12px;
+}
+
+.similar-chip {
+    background: rgba(30, 215, 96, 0.13);
+    border: 1px solid rgba(30, 215, 96, 0.28);
+    border-radius: 999px;
+    color: #b8f7c8;
+    font-weight: 900;
+    padding: 10px 14px;
+    transition: 0.2s ease;
+}
+
+.similar-chip:hover {
+    background: rgba(30, 215, 96, 0.22);
+    color: #fff;
+    transform: translateY(-1px);
 }
 
 .artist-content-grid {
@@ -326,17 +356,46 @@ a:hover {
     width: 100%;
 }
 
+.chart-section {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.055)),
+        #151515;
+}
+
 .chart-note {
     font-size: 16px;
     line-height: 1.7;
-    margin: 0 0 14px;
+    margin: 0 0 16px;
+}
+
+.chart-summary-grid {
+    margin-bottom: 16px;
+}
+
+.chart-summary-card {
+    background: rgba(0, 0, 0, 0.22);
+}
+
+.chart-summary-card:nth-child(2) {
+    border-color: rgba(30, 215, 96, 0.34);
+}
+
+.chart-summary-card:nth-child(3) {
+    border-color: rgba(255, 139, 64, 0.34);
 }
 
 .chart-wrapper {
-    background: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
-    padding: 16px 14px 6px;
+    background:
+        radial-gradient(circle at 90% 0%, rgba(255, 139, 64, 0.10), transparent 28%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035));
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 20px;
+    min-height: 390px;
+    padding: 20px;
+}
+
+.chart-wrapper canvas {
+    min-height: 340px;
 }
 
 .section-title-row {
@@ -402,16 +461,36 @@ a:hover {
     display: none;
 }
 
-.album-row strong {
+.album-main {
+    min-width: 0;
+}
+
+.album-row strong,
+.album-title {
     color: #fff;
     display: block;
     font-size: 17px;
+    font-weight: 900;
     margin-bottom: 4px;
+    overflow-wrap: anywhere;
+}
+
+.album-title:hover {
+    color: #1ed760;
 }
 
 .album-row span {
     color: rgba(255, 255, 255, 0.64);
     font-size: 14px;
+}
+
+.album-actions {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
 }
 
 .type-pill {
@@ -428,8 +507,13 @@ a:hover {
 }
 
 .type-pill.single {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
+    background: rgba(255, 139, 64, 0.18);
+    color: #ffd4b4;
+}
+
+.spotify-album-link {
+    font-size: 14px;
+    padding: 8px 12px;
 }
 
 .album-empty {
@@ -453,7 +537,6 @@ a:hover {
     margin: 0 0 14px;
 }
 
-/* ===== Mood / discover pages ===== */
 .mood-header h1 {
     color: #fff;
     font-size: 48px;
@@ -499,7 +582,7 @@ a:hover {
 .discover-result,
 .discover-empty {
     background:
-        radial-gradient(circle at 92% 0%, rgba(214, 76, 24, 0.20), transparent 30%),
+        radial-gradient(circle at 92% 0%, rgba(255, 139, 64, 0.20), transparent 30%),
         rgba(255, 255, 255, 0.07);
 }
 
@@ -527,9 +610,6 @@ a:hover {
 }
 
 .mood-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
     margin-top: 18px;
 }
 
@@ -578,9 +658,6 @@ a:hover {
 }
 
 .discover-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
     margin-top: 24px;
 }
 
@@ -624,8 +701,9 @@ a:hover {
         font-size: 38px;
     }
 
-    .artist-stat-grid {
-        grid-template-columns: 1fr;
+    .artist-stat-grid,
+    .chart-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .section-title-row,
@@ -639,11 +717,40 @@ a:hover {
         flex-direction: column;
     }
 
+    .album-actions {
+        justify-content: flex-start;
+        width: 100%;
+    }
+
     .mood-header h1 {
         font-size: 36px;
     }
 
     .mood-header p {
         font-size: 18px;
+    }
+}
+
+@media (max-width: 560px) {
+    .section-card h2 {
+        font-size: 25px;
+    }
+
+    .artist-title {
+        font-size: 32px;
+    }
+
+    .artist-stat-grid,
+    .chart-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-wrapper {
+        min-height: 320px;
+        padding: 14px;
+    }
+
+    .chart-wrapper canvas {
+        min-height: 280px;
     }
 }
