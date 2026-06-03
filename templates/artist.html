@@ -8,84 +8,88 @@
 </head>
 <body>
     <div class="container">
-        <div class="page-card">
+        <div class="page-card artist-page-card">
             <a href="/" class="back-link">← 回首頁</a>
 
             {% if error %}
-                <h1>{{ error }}</h1>
+                <div class="empty-state">
+                    <h1>{{ error }}</h1>
+                    <p>可以回首頁重新搜尋，或從情境推薦、風格探索開始找歌手。</p>
+                </div>
             {% else %}
-                <div class="artist-header">
-                    <div>
+                <div class="artist-hero">
+                    <div class="artist-image-wrap">
                         {% if artist.image %}
                             <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
                         {% endif %}
                     </div>
 
-                    <div>
+                    <div class="artist-overview">
+                        <p class="eyebrow">Artist Explorer</p>
                         <h1 class="artist-title">{{ artist.name }}</h1>
 
-                        <div class="info">
-                            <p>
-                                風格：
-                                {% if artist_tags %}
-                                    {{ artist_tags | join(', ') }}
-                                {% else %}
-                                    暫時無法取得
-                                {% endif %}
-                            </p>
+                        <div class="artist-tag-list">
+                            {% if artist_tags %}
+                                {% for tag in artist_tags %}
+                                    <span>{{ tag }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span>暫時無法取得風格</span>
+                            {% endif %}
+                        </div>
 
+                        <div class="artist-actions">
                             <a href="{{ artist.spotify_url }}" target="_blank" class="spotify-link">
                                 在 Spotify 開啟
                             </a>
                         </div>
+
+                        <div class="artist-stat-grid">
+                            <div class="artist-stat-card">
+                                <strong>{{ albums | length }}</strong>
+                                <span>作品資料</span>
+                            </div>
+                            <div class="artist-stat-card">
+                                <strong>{{ similar_artists | length }}</strong>
+                                <span>相似歌手</span>
+                            </div>
+                            <div class="artist-stat-card">
+                                <strong>{{ chart_labels | length }}</strong>
+                                <span>發行年份</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="section-card">
-                    <h2>Spotify 播放器</h2>
-                    <iframe
-                        src="{{ artist.embed_url }}"
-                        class="spotify-embed"
-                        allowfullscreen=""
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                        loading="lazy">
-                    </iframe>
+                <div class="loading-panel artist-loading-panel" id="loadingPanel">
+                    <div class="loading-disc"></div>
+                    <div>
+                        <strong>正在建立音樂探索卡</strong>
+                        <p>同步整理歌手資料、風格標籤與生平簡介，請稍候。</p>
+                        <div class="loading-sources">
+                            <span>Spotify</span>
+                            <span>Last.fm</span>
+                            <span>Wikipedia</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="section-card">
-                    <h2>生平簡介</h2>
-                    <p class="bio-text">{{ artist_bio }}</p>
-                </div>
+                <div class="artist-content-grid">
+                    <div class="section-card spotify-section">
+                        <h2>Spotify 播放器</h2>
+                        <iframe
+                            src="{{ artist.embed_url }}"
+                            class="spotify-embed"
+                            allowfullscreen=""
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            loading="lazy">
+                        </iframe>
+                    </div>
 
-                <div class="section-card">
-                    <h2>專輯 / 單曲</h2>
-                    <ul>
-                        {% for album in albums %}
-                            <li>
-                                {{ album.name }}
-                                {% if album.album_type == 'single' %}
-                                    （單曲，發行日：{{ album.release_date }}）
-                                {% else %}
-                                    （專輯，發行日：{{ album.release_date }}）
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <div class="section-card">
-                    <h2>相似歌手推薦</h2>
-                    <ul>
-                        {% if similar_artists %}
-                            {% for similar in similar_artists %}
-                                <li>
-                                    <a href="/artist?name={{ similar }}">{{ similar }}</a>
-                                </li>
-                            {% endfor %}
-                        {% else %}
-                            <li>暫時無法取得相似歌手資料</li>
-                        {% endif %}
-                    </ul>
+                    <div class="section-card bio-section">
+                        <h2>生平簡介</h2>
+                        <p class="bio-text">{{ artist_bio }}</p>
+                    </div>
                 </div>
 
                 <div class="section-card">
@@ -94,6 +98,53 @@
                     <div class="chart-wrapper">
                         <canvas id="yearChart"></canvas>
                     </div>
+                </div>
+
+                <div class="section-card discography-section">
+                    <div class="section-title-row">
+                        <div>
+                            <h2>專輯 / 單曲</h2>
+                            <p>可以切換查看全部作品、專輯或單曲。</p>
+                        </div>
+                        <div class="discography-toolbar" aria-label="作品類型篩選">
+                            <button type="button" class="filter-btn active" data-filter="all">全部</button>
+                            <button type="button" class="filter-btn" data-filter="album">專輯</button>
+                            <button type="button" class="filter-btn" data-filter="single">單曲</button>
+                        </div>
+                    </div>
+
+                    <ul class="album-list" id="albumList">
+                        {% for album in albums %}
+                            <li class="album-row" data-type="{{ album.album_type }}">
+                                <div>
+                                    <strong>{{ album.name }}</strong>
+                                    <span>發行日：{{ album.release_date }}</span>
+                                </div>
+                                {% if album.album_type == 'single' %}
+                                    <span class="type-pill single">單曲</span>
+                                {% else %}
+                                    <span class="type-pill album">專輯</span>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <p class="album-empty" id="albumEmpty">這個分類目前沒有作品。</p>
+                </div>
+
+                <div class="section-card similar-section">
+                    <h2>相似歌手推薦</h2>
+                    {% if similar_artists %}
+                        <div class="recommendation-grid">
+                            {% for similar in similar_artists %}
+                                <a href="/artist?name={{ similar }}" class="recommendation-card artist-loading-link">
+                                    <strong>{{ similar }}</strong>
+                                    <span>查看歌手資料</span>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="bio-text">暫時無法取得相似歌手資料。</p>
+                    {% endif %}
                 </div>
 
                 <script>
@@ -111,13 +162,15 @@
                                     label: '專輯',
                                     data: albumValues,
                                     backgroundColor: '#1db954',
-                                    borderWidth: 1
+                                    borderRadius: 8,
+                                    borderWidth: 0
                                 },
                                 {
                                     label: '單曲',
                                     data: singleValues,
                                     backgroundColor: '#222222',
-                                    borderWidth: 1
+                                    borderRadius: 8,
+                                    borderWidth: 0
                                 }
                             ]
                         },
@@ -130,7 +183,10 @@
                             },
                             scales: {
                                 x: {
-                                    stacked: true
+                                    stacked: true,
+                                    grid: {
+                                        display: false
+                                    }
                                 },
                                 y: {
                                     beginAtZero: true,
@@ -141,6 +197,38 @@
                                 }
                             }
                         }
+                    });
+
+                    const loadingPanel = document.getElementById('loadingPanel');
+                    const artistLinks = document.querySelectorAll('.artist-loading-link');
+                    artistLinks.forEach((link) => {
+                        link.addEventListener('click', () => {
+                            loadingPanel.classList.add('visible');
+                        });
+                    });
+
+                    const filterButtons = document.querySelectorAll('.filter-btn');
+                    const albumRows = document.querySelectorAll('.album-row');
+                    const albumEmpty = document.getElementById('albumEmpty');
+
+                    filterButtons.forEach((button) => {
+                        button.addEventListener('click', () => {
+                            const filter = button.dataset.filter;
+                            let visibleCount = 0;
+
+                            filterButtons.forEach((item) => item.classList.remove('active'));
+                            button.classList.add('active');
+
+                            albumRows.forEach((row) => {
+                                const shouldShow = filter === 'all' || row.dataset.type === filter;
+                                row.classList.toggle('hidden', !shouldShow);
+                                if (shouldShow) {
+                                    visibleCount += 1;
+                                }
+                            });
+
+                            albumEmpty.classList.toggle('visible', visibleCount === 0);
+                        });
                     });
                 </script>
             {% endif %}
