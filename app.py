@@ -1,7 +1,6 @@
 import os
 import random
 from collections import Counter
-from itertools import combinations
 
 from flask import Flask, render_template, request, redirect, session, url_for
 from services.spotify_api import search_artist, get_artist_albums, get_artist_previews
@@ -25,6 +24,42 @@ POPULAR_ARTISTS = [
     "落日飛車",
     "Dua Lipa"
 ]
+
+STYLE_TAG_DESCRIPTIONS = {
+    "pop": "流行音樂，旋律容易記住、編曲清楚，通常適合大眾聆聽。",
+    "c-pop": "華語流行音樂，常見於中文抒情、流行與創作歌手作品。",
+    "chinese": "中文語系音樂，重視歌詞理解與華語聽眾熟悉的語感。",
+    "mandopop": "華語流行音樂，包含中文流行、抒情與創作歌手作品。",
+    "taiwan": "與台灣音樂圈或華語流行文化關聯較高的標籤。",
+    "jay chou": "與周杰倫相關的風格標記，常和華語流行、R&B、嘻哈與中國風元素連結。",
+    "indie": "獨立音樂，通常較重視個人風格、樂團質感與非主流製作。",
+    "r&b": "R&B 重視節奏律動與聲線情緒，常帶有深夜、放鬆或靈魂樂氛圍。",
+    "rnb": "R&B 重視節奏律動與聲線情緒，常帶有深夜、放鬆或靈魂樂氛圍。",
+    "k-pop": "韓國流行音樂，常結合舞曲、偶像團體、強節奏和完整舞台感。",
+    "j-pop": "日本流行音樂，旋律線明顯，常見細膩情緒、動畫感或城市流行元素。",
+    "ballad": "抒情歌曲，通常節奏較慢、情緒明確，重視歌詞和旋律。",
+    "dance": "舞曲取向，節奏明確、能量高，適合運動或派對情境。",
+    "hip-hop": "嘻哈音樂，重視節奏、押韻和口語表達。",
+    "rock": "搖滾音樂，常以吉他、鼓和強烈現場感作為核心。",
+    "acoustic": "原音或不插電風格，編曲較簡潔，聲音自然溫暖。",
+    "singer-songwriter": "創作歌手風格，通常由歌手本人參與詞曲創作，個人敘事感較強。",
+    "city pop": "城市流行，常帶有復古、都會、輕快或夜晚感。",
+    "dream pop": "夢幻流行，聲響朦朧、氛圍感強，常適合放空或雨天。",
+    "alternative": "另類音樂，通常不完全走主流流行公式，風格較有實驗或個性。",
+    "idol": "偶像流行風格，常結合舞台表演、團體形象和完整視覺企劃。",
+    "anime": "常與動畫作品、日系流行和戲劇化旋律連結。",
+    "edm": "電子舞曲，節奏強烈、段落堆疊明顯，適合派對或運動。",
+    "jazz pop": "融合爵士和流行音樂，常有溫暖和弦、輕鬆節奏與細緻聲線。",
+    "lo-fi": "低傳真或放鬆取向的聲音，常適合讀書、工作或背景播放。",
+    "soft pop": "柔和流行，旋律順耳、壓力較低，適合長時間聆聽。",
+    "soul": "靈魂樂取向，重視人聲情緒、律動和溫度。",
+    "ambient": "氛圍音樂，重視空間感與聲響層次，適合放空或專注。",
+    "band": "樂團取向，通常有較明顯的吉他、鼓與現場演奏感。",
+    "workout": "適合運動或提振精神的高能量標籤。",
+    "chill": "放鬆取向，通常節奏不急、聲音舒適，適合背景播放。"
+}
+
+DEFAULT_STYLE_DESCRIPTION = "這是 Last.fm 根據聽眾標記整理出的風格關鍵字，可用來理解這位歌手常被歸類的音樂方向。"
 
 DISCOVER_FILTERS = {
     "mandarin": {
@@ -117,28 +152,50 @@ MOOD_RECOMMENDATIONS = {
 }
 
 
-def recommendation_key(artists):
-    return "|".join(sorted(artists))
+def build_style_insights(artist_tags, similar_artists):
+    tag_insights = []
+    for tag in artist_tags[:5]:
+        key = tag.strip().lower()
+        tag_insights.append({
+            "name": tag,
+            "description": STYLE_TAG_DESCRIPTIONS.get(key, DEFAULT_STYLE_DESCRIPTION)
+        })
+
+    return {
+        "tags": tag_insights,
+        "similar_artists": similar_artists[:6] if similar_artists else []
+    }
 
 
-def pick_recommendation_artists(session_key, group_key, candidates, count=5):
+def pick_recommendation_artists(session_key, last_session_key, group_key, candidates, count=5):
+    pick_count = min(count, len(candidates))
+    if pick_count == 0:
+        return []
+
     used_by_group = session.get(session_key, {})
-    used_keys = set(used_by_group.get(group_key, []))
-    candidate_combinations = list(combinations(candidates, min(count, len(candidates))))
-    unused_combinations = [
-        combo for combo in candidate_combinations
-        if recommendation_key(combo) not in used_keys
-    ]
+    last_by_group = session.get(last_session_key, {})
+    used_artists = set(used_by_group.get(group_key, []))
+    available_artists = [artist for artist in candidates if artist not in used_artists]
 
-    if not unused_combinations:
-        used_keys = set()
-        unused_combinations = candidate_combinations
+    if len(available_artists) < pick_count:
+        used_artists = set()
+        available_artists = list(candidates)
 
-    selected_artists = list(random.choice(unused_combinations))
-    random.shuffle(selected_artists)
-    used_keys.add(recommendation_key(selected_artists))
-    used_by_group[group_key] = list(used_keys)
+    selected_artists = random.sample(available_artists, pick_count)
+    last_artists = set(last_by_group.get(group_key, []))
+
+    if len(candidates) > pick_count and set(selected_artists) == last_artists:
+        for _ in range(20):
+            retry_artists = random.sample(available_artists, pick_count)
+            if set(retry_artists) != last_artists:
+                selected_artists = retry_artists
+                break
+
+    used_artists.update(selected_artists)
+    used_by_group[group_key] = list(used_artists)
+    last_by_group[group_key] = selected_artists
     session[session_key] = used_by_group
+    session[last_session_key] = last_by_group
     return selected_artists
 
 
@@ -149,7 +206,8 @@ def build_mood_recommendation(mood_key):
 
     recommendation = mood.copy()
     recommendation["artists"] = pick_recommendation_artists(
-        "used_mood_recommendations",
+        "used_mood_artists",
+        "last_mood_recommendations",
         mood_key,
         mood["artists"]
     )
@@ -163,7 +221,8 @@ def build_discover_recommendation(filter_key):
 
     recommendation = filter_data.copy()
     recommendation["artists"] = pick_recommendation_artists(
-        "used_discover_recommendations",
+        "used_discover_artists",
+        "last_discover_recommendations",
         filter_key,
         filter_data["artists"]
     )
@@ -235,6 +294,7 @@ def artist_page():
         similar_artists = get_similar_artists(artist_name)
         artist_tags = get_artist_tags(artist_name)
         artist_bio = get_artist_bio(artist_name)
+        style_insights = build_style_insights(artist_tags, similar_artists)
 
         album_years = []
         single_years = []
@@ -254,6 +314,19 @@ def artist_page():
         chart_labels = sorted(set(album_counts.keys()) | set(single_counts.keys()))
         album_chart_values = [album_counts[year] for year in chart_labels]
         single_chart_values = [single_counts[year] for year in chart_labels]
+        album_total = sum(album_chart_values)
+        single_total = sum(single_chart_values)
+        yearly_totals = {
+            year: album_counts[year] + single_counts[year]
+            for year in chart_labels
+        }
+        most_active_year = max(yearly_totals, key=yearly_totals.get) if yearly_totals else "無資料"
+        chart_summary = {
+            "total": album_total + single_total,
+            "albums": album_total,
+            "singles": single_total,
+            "most_active_year": most_active_year
+        }
 
         return render_template(
             "artist.html",
@@ -262,9 +335,11 @@ def artist_page():
             similar_artists=similar_artists,
             artist_tags=artist_tags,
             artist_bio=artist_bio,
+            style_insights=style_insights,
             chart_labels=chart_labels,
             album_chart_values=album_chart_values,
             single_chart_values=single_chart_values,
+            chart_summary=chart_summary,
             error=None
         )
 
