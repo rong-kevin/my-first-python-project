@@ -12,6 +12,7 @@ load_dotenv()
 CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 MIN_NEW_RELEASE_YEAR = date.today().year - 2
+artist_preview_cache = {}
 
 
 @lru_cache(maxsize=1)
@@ -113,22 +114,22 @@ def build_artist_preview(artist_name, token):
     }
 
 
-@lru_cache(maxsize=64)
 def get_artist_preview(artist_name):
+    if artist_name in artist_preview_cache:
+        return artist_preview_cache[artist_name]
+
     try:
         token = get_access_token()
-        return build_artist_preview(artist_name, token)
+        preview = build_artist_preview(artist_name, token)
+        if preview.get("image"):
+            artist_preview_cache[artist_name] = preview
+        return preview
     except Exception:
         return fallback_artist_preview(artist_name)
 
 
-@lru_cache(maxsize=16)
-def get_artist_previews_cached(artist_names):
-    return tuple(get_artist_preview(artist_name) for artist_name in artist_names)
-
-
 def get_artist_previews(artist_names):
-    return list(get_artist_previews_cached(tuple(artist_names)))
+    return [get_artist_preview(artist_name) for artist_name in artist_names]
 
 
 def get_artist_top_tracks(artist_name):
