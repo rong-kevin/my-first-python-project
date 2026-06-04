@@ -1,6 +1,7 @@
 import base64
 import os
 import random
+from datetime import date
 from functools import lru_cache
 
 import requests
@@ -10,6 +11,7 @@ load_dotenv()
 
 CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
+MIN_NEW_RELEASE_YEAR = date.today().year - 1
 
 
 @lru_cache(maxsize=1)
@@ -274,14 +276,19 @@ def get_artist_recent_singles(artist_name, limit=2):
     seen = set()
     for album in albums_response.json().get("items", []):
         song_name = album.get("name")
+        release_date = album.get("release_date", "")
+        release_year = release_date[:4]
         if not song_name or song_name in seen:
+            continue
+
+        if not release_year.isdigit() or int(release_year) < MIN_NEW_RELEASE_YEAR:
             continue
 
         seen.add(song_name)
         songs.append({
             "name": song_name,
             "artist": resolved_artist_name,
-            "release_date": album.get("release_date", ""),
+            "release_date": release_date,
             "image": album.get("images", [{}])[0].get("url") if album.get("images") else None,
             "spotify_url": album.get("external_urls", {}).get("spotify", "#")
         })
