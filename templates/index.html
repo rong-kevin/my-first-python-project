@@ -90,6 +90,31 @@
             </a>
         </section>
 
+        <section class="popular-stage">
+            <div class="section-heading">
+                <p>熱門搜尋</p>
+                <h2>從這些歌手開始聽</h2>
+            </div>
+
+            <div class="artist-card-grid">
+                {% for card in popular_artist_cards %}
+                    <a href="/artist?name={{ card.name }}" class="artist-preview-card artist-loading-link">
+                        <div class="preview-art">
+                            {% if card.image %}
+                                <img src="{{ card.image }}" alt="{{ card.name }}">
+                            {% else %}
+                                <span>{{ card.name[:1] }}</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <strong>{{ card.name }}</strong>
+                            <small>查看歌手資料</small>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+
         <section class="new-song-stage" id="newSongs">
             <div class="section-heading">
                 <p>NEW RELEASE PICKS</p>
@@ -110,31 +135,6 @@
                             <strong>{{ song.name }}</strong>
                             <span>{{ song.artist }}</span>
                             <small>{{ song.release_date }}</small>
-                        </div>
-                    </a>
-                {% endfor %}
-            </div>
-        </section>
-
-        <section class="popular-stage">
-            <div class="section-heading">
-                <p>熱門搜尋</p>
-                <h2>從這些歌手開始聽</h2>
-            </div>
-
-            <div class="artist-card-grid">
-                {% for card in popular_artist_cards %}
-                    <a href="/artist?name={{ card.name }}" class="artist-preview-card artist-loading-link">
-                        <div class="preview-art">
-                            {% if card.image %}
-                                <img src="{{ card.image }}" alt="{{ card.name }}">
-                            {% else %}
-                                <span>{{ card.name[:1] }}</span>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <strong>{{ card.name }}</strong>
-                            <small>查看歌手資料</small>
                         </div>
                     </a>
                 {% endfor %}
