@@ -2,49 +2,136 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>歌手資料探索網站</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
 </head>
-<body>
-    <div class="hero">
-        <div class="container">
-            <div class="hero-card">
-                <h1>🎵 發掘你最愛的聲音</h1>
-                <p class="subtitle">
-                    一鍵探索歌手的音樂宇宙，查看作品、風格、生平與相似歌手推薦。
+<body class="home-page">
+    <main class="home-shell">
+        <nav class="home-nav" aria-label="主要導覽">
+            <a href="/" class="brand-mark">Artist Explorer</a>
+            <div class="nav-links">
+                <a href="#search">搜尋</a>
+                <a href="/mood">情境推薦</a>
+                <a href="/discover">風格探索</a>
+                <a href="/random" class="artist-loading-link">隨機探索</a>
+            </div>
+        </nav>
+
+        <section class="music-hero" id="search">
+            <div class="hero-copy">
+                <p class="hero-kicker">Music discovery for every mood</p>
+                <h1>探索下一個會喜歡的聲音</h1>
+                <p class="hero-subtitle">
+                    搜尋歌手、查看作品年份、聽 Spotify 播放器，也能從情境與曲風開始找到新的音樂人。
                 </p>
 
-                <form action="/artist" method="get" class="search-box">
-                    <input type="text" name="name" placeholder="🔍 例如：Taylor Swift" required>
-                    <button type="submit">搜尋</button>
-                    <a href="/random" class="secondary-btn">隨機探索</a>
+                <form action="/artist" method="get" class="home-search-form" id="artistSearchForm">
+                    <input type="text" name="name" placeholder="輸入歌手名稱，例如 Taylor Swift" required>
+                    <button type="submit" id="searchButton">搜尋</button>
                 </form>
 
-                <div class="popular-searches">
-                    <p>熱門搜尋：</p>
-                    <div class="tags">
-                        {% for artist in popular_artists %}
-                            <a href="/artist?name={{ artist }}" class="tag">{{ artist }}</a>
-                        {% endfor %}
+                <div class="hero-actions">
+                    <a href="/random" class="primary-pill artist-loading-link">隨機探索</a>
+                    <a href="/mood" class="ghost-pill">情境推薦</a>
+                    <a href="/discover" class="ghost-pill warm">風格探索</a>
+                </div>
+
+                <div class="loading-panel home-loading-panel" id="loadingPanel">
+                    <div class="loading-disc"></div>
+                    <div>
+                        <strong>正在建立音樂探索卡</strong>
+                        <p>同步整理歌手資料、風格標籤與生平簡介，請稍候。</p>
+                        <div class="loading-sources">
+                            <span>Spotify</span>
+                            <span>Last.fm</span>
+                            <span>Wikipedia</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="features">
-                <div class="feature-card">
-                    <h3>📊 發行統計</h3>
-                    <p>用圖表快速查看歌手的作品年份分布。</p>
-                </div>
-                <div class="feature-card">
-                    <h3>🤝 相似推薦</h3>
-                    <p>探索與你喜歡的歌手風格相近的音樂人。</p>
-                </div>
-                <div class="feature-card">
-                    <h3>📖 生平簡介</h3>
-                    <p>整合 Wikipedia 簡介，快速認識歌手背景。</p>
+            <div class="hero-visual" aria-hidden="true">
+                <div class="album-wall">
+                    {% for card in popular_artist_cards[:6] %}
+                        <div class="album-tile tile-{{ loop.index }}">
+                            {% if card.image %}
+                                <img src="{{ card.image }}" alt="">
+                            {% else %}
+                                <span>{{ card.name[:1] }}</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+
+        <section class="quick-index" aria-label="快速索引">
+            <a href="#search" class="index-card">
+                <span>01</span>
+                <strong>我知道歌手名字</strong>
+                <small>直接搜尋並查看歌手資料</small>
+            </a>
+            <a href="/mood" class="index-card">
+                <span>02</span>
+                <strong>我想照心情找</strong>
+                <small>讀書、運動、通勤、失戀、睡前</small>
+            </a>
+            <a href="/discover" class="index-card warm">
+                <span>03</span>
+                <strong>我想照語言 / 曲風找</strong>
+                <small>中文、英文、韓文、R&B、Indie</small>
+            </a>
+            <a href="/random" class="index-card accent artist-loading-link">
+                <span>04</span>
+                <strong>直接給我一位</strong>
+                <small>從熱門歌手中隨機探索</small>
+            </a>
+        </section>
+
+        <section class="popular-stage">
+            <div class="section-heading">
+                <p>熱門搜尋</p>
+                <h2>從這些歌手開始聽</h2>
+            </div>
+
+            <div class="artist-card-grid">
+                {% for card in popular_artist_cards %}
+                    <a href="/artist?name={{ card.name }}" class="artist-preview-card artist-loading-link">
+                        <div class="preview-art">
+                            {% if card.image %}
+                                <img src="{{ card.image }}" alt="{{ card.name }}">
+                            {% else %}
+                                <span>{{ card.name[:1] }}</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <strong>{{ card.name }}</strong>
+                            <small>查看歌手資料</small>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const searchForm = document.getElementById('artistSearchForm');
+        const searchButton = document.getElementById('searchButton');
+        const loadingPanel = document.getElementById('loadingPanel');
+        const artistLinks = document.querySelectorAll('.artist-loading-link');
+
+        function showLoading() {
+            loadingPanel.classList.add('visible');
+            searchButton.textContent = '搜尋中...';
+            searchButton.disabled = true;
+        }
+
+        searchForm.addEventListener('submit', showLoading);
+        artistLinks.forEach((link) => {
+            link.addEventListener('click', showLoading);
+        });
+    </script>
 </body>
 </html>

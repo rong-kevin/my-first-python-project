@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情境音樂推薦</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="page-card">
+            <a href="/" class="back-link">← 回首頁</a>
+
+            <div class="mood-header">
+                <h1>情境音樂推薦</h1>
+                <p>
+                    選擇現在的情境，快速找到適合讀書、運動、通勤、失戀、睡前或下雨天聽的歌手。
+                </p>
+            </div>
+
+            <div class="mood-options">
+                {% for mood_key, mood in moods.items() %}
+                    <a
+                        href="/mood?type={{ mood_key }}"
+                        class="mood-option mood-loading-link {% if selected_mood == mood_key %}active{% endif %}">
+                        {{ mood.label }}
+                    </a>
+                {% endfor %}
+            </div>
+
+            <div class="loading-panel mood-loading-panel" id="loadingPanel">
+                <div class="loading-disc"></div>
+                <div>
+                    <strong>正在建立音樂探索卡</strong>
+                    <p>正在替這個情境挑選下一組不重複的推薦歌手。</p>
+                    <div class="loading-sources">
+                        <span>情境分析</span>
+                        <span>推薦輪替</span>
+                        <span>歌手資料</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if selected_recommendation %}
+                <div class="section-card mood-result">
+                    <div class="mood-result-header">
+                        <h2>{{ selected_recommendation.label }}</h2>
+                        <a href="/mood?type={{ selected_mood }}" class="secondary-btn refresh-mood-btn mood-loading-link">換一組推薦</a>
+                    </div>
+                    <p class="bio-text">{{ selected_recommendation.description }}</p>
+
+                    <div class="mood-tags">
+                        {% for tag in selected_recommendation.tags %}
+                            <span>{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <h3>推薦歌手</h3>
+                    <div class="recommendation-grid">
+                        {% for artist in selected_recommendation.artists %}
+                            <a href="/artist?name={{ artist }}" class="recommendation-card artist-loading-link">
+                                <strong>{{ artist }}</strong>
+                                <span>查看歌手資料</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="section-card mood-empty">
+                    <h2>先選一個情境</h2>
+                    <p class="bio-text">不同情境會推薦不同風格的音樂人，點選上方按鈕開始探索。</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const loadingPanel = document.getElementById('loadingPanel');
+        const loadingLinks = document.querySelectorAll('.artist-loading-link, .mood-loading-link');
+
+        function showLoading() {
+            loadingPanel.classList.add('visible');
+        }
+
+        loadingLinks.forEach((link) => {
+            link.addEventListener('click', showLoading);
+        });
+    </script>
+</body>
+</html>

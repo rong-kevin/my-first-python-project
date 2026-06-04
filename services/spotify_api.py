@@ -1,5 +1,7 @@
 import base64
 import os
+from functools import lru_cache
+
 import requests
 from dotenv import load_dotenv
 
@@ -9,6 +11,7 @@ CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 
 
+@lru_cache(maxsize=1)
 def get_access_token():
     auth_string = f"{CLIENT_ID}:{CLIENT_SECRET}"
     auth_bytes = auth_string.encode("utf-8")
@@ -23,7 +26,7 @@ def get_access_token():
         "grant_type": "client_credentials"
     }
 
-    response = requests.post(url, headers=headers, data=data)
+    response = requests.post(url, headers=headers, data=data, timeout=8)
     response.raise_for_status()
 
     return response.json()["access_token"]
@@ -42,7 +45,7 @@ def search_artist(artist_name):
         "limit": 1
     }
 
-    response = requests.get(search_url, headers=headers, params=params)
+    response = requests.get(search_url, headers=headers, params=params, timeout=10)
     response.raise_for_status()
 
     json_result = response.json()
@@ -55,11 +58,11 @@ def search_artist(artist_name):
     artist_id = basic_artist.get("id")
 
     detail_url = f"https://api.spotify.com/v1/artists/{artist_id}"
-    detail_response = requests.get(detail_url, headers=headers)
+    detail_response = requests.get(detail_url, headers=headers, timeout=10)
     detail_response.raise_for_status()
 
     artist = detail_response.json()
-    
+
     spotify_url = artist.get("external_urls", {}).get("spotify", "#")
     embed_url = spotify_url.replace("open.spotify.com/", "open.spotify.com/embed/") if spotify_url != "#" else "#"
 
@@ -71,6 +74,59 @@ def search_artist(artist_name):
         "spotify_url": spotify_url,
         "embed_url": embed_url
     }
+
+
+def fallback_artist_preview(artist_name):
+    return {
+        "name": artist_name,
+        "image": None,
+        "spotify_url": "#"
+    }
+
+
+def build_artist_preview(artist_name, token):
+    search_url = "https://api.spotify.com/v1/search"
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+    params = {
+        "q": artist_name,
+        "type": "artist",
+        "limit": 1
+    }
+
+    response = requests.get(search_url, headers=headers, params=params, timeout=4)
+    response.raise_for_status()
+
+    items = response.json().get("artists", {}).get("items", [])
+    if not items:
+        return fallback_artist_preview(artist_name)
+
+    artist = items[0]
+    return {
+        "name": artist.get("name", artist_name),
+        "image": artist.get("images", [{}])[0].get("url") if artist.get("images") else None,
+        "spotify_url": artist.get("external_urls", {}).get("spotify", "#")
+    }
+
+
+@lru_cache(maxsize=64)
+def get_artist_preview(artist_name):
+    try:
+        token = get_access_token()
+        return build_artist_preview(artist_name, token)
+    except Exception:
+        return fallback_artist_preview(artist_name)
+
+
+@lru_cache(maxsize=16)
+def get_artist_previews_cached(artist_names):
+    return tuple(get_artist_preview(artist_name) for artist_name in artist_names)
+
+
+def get_artist_previews(artist_names):
+    return list(get_artist_previews_cached(tuple(artist_names)))
+
 
 def get_artist_top_tracks(artist_name):
     token = get_access_token()
@@ -85,7 +141,7 @@ def get_artist_top_tracks(artist_name):
         "limit": 1
     }
 
-    search_response = requests.get(search_url, headers=headers, params=params)
+    search_response = requests.get(search_url, headers=headers, params=params, timeout=10)
     search_response.raise_for_status()
 
     search_data = search_response.json()
@@ -100,7 +156,8 @@ def get_artist_top_tracks(artist_name):
     top_tracks_response = requests.get(
         top_tracks_url,
         headers=headers,
-        params={"market": "TW"}
+        params={"market": "TW"},
+        timeout=10
     )
     top_tracks_response.raise_for_status()
 
@@ -114,6 +171,8 @@ def get_artist_top_tracks(artist_name):
         }
         for track in tracks[:5]
     ]
+
+
 def get_artist_albums(artist_name):
     token = get_access_token()
 
@@ -127,7 +186,7 @@ def get_artist_albums(artist_name):
         "limit": 1
     }
 
-    search_response = requests.get(search_url, headers=headers, params=params)
+    search_response = requests.get(search_url, headers=headers, params=params, timeout=10)
     search_response.raise_for_status()
 
     search_data = search_response.json()
@@ -145,7 +204,8 @@ def get_artist_albums(artist_name):
         params={
             "include_groups": "album,single",
             "limit": 10
-        }
+        },
+        timeout=10
     )
     albums_response.raise_for_status()
 
@@ -164,7 +224,9 @@ def get_artist_albums(artist_name):
 
         result.append({
             "name": album_name,
-            "release_date": album.get("release_date", "無資料")
+            "release_date": album.get("release_date", "無資料"),
+            "album_type": album.get("album_type", "album"),
+            "spotify_url": album.get("external_urls", {}).get("spotify", "#")
         })
 
     return result
