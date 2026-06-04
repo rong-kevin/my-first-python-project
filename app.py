@@ -6,8 +6,8 @@ from flask import Flask, jsonify, render_template, request, redirect, session, u
 from services.spotify_api import (
     search_artist,
     get_artist_albums,
-    get_artist_previews,
-    get_new_song_recommendations
+    get_new_song_recommendations,
+    fallback_artist_preview
 )
 from services.lastfm_api import get_similar_artists, get_artist_tags
 from services.wiki_scraper import get_artist_bio
@@ -282,9 +282,9 @@ def get_new_song_artist_source():
 @app.route("/")
 def home():
     hero_artist_names = pick_hero_artists()
-    hero_artist_cards = get_artist_previews(hero_artist_names)
-    popular_artist_cards = get_artist_previews(POPULAR_ARTISTS)
-    new_song_recommendations = get_new_song_recommendations(get_new_song_artist_source())
+    hero_artist_cards = [fallback_artist_preview(name) for name in hero_artist_names]
+    popular_artist_cards = [fallback_artist_preview(name) for name in POPULAR_ARTISTS]
+    new_song_recommendations = []
     return render_template(
         "index.html",
         popular_artists=POPULAR_ARTISTS,
