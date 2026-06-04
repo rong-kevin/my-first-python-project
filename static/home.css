@@ -388,6 +388,17 @@
     transform: translateY(2px);
 }
 
+.new-song-empty {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 18px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 18px;
+    font-weight: 800;
+    grid-column: 1 / -1;
+    padding: 22px;
+}
+
 .new-song-card {
     align-items: center;
     background:

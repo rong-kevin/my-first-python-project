@@ -137,6 +137,8 @@
                             <small>{{ song.release_date }}</small>
                         </div>
                     </a>
+                {% else %}
+                    <div class="new-song-empty">正在取得新歌推薦，請稍候。</div>
                 {% endfor %}
             </div>
         </section>
@@ -171,7 +173,12 @@
         }
 
         function renderNewSongs(songs) {
-            if (!newSongGrid || !songs.length) {
+            if (!newSongGrid) {
+                return;
+            }
+
+            if (!songs.length) {
+                newSongGrid.innerHTML = '<div class="new-song-empty">暫時抓不到新歌推薦，稍後會自動重試。</div>';
                 return;
             }
 
@@ -214,7 +221,8 @@
             }
         }
 
-        setInterval(refreshNewSongs, 30000);
+        refreshNewSongs();
+        setInterval(refreshNewSongs, 120000);
     </script>
 </body>
 </html>
