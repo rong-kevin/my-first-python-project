@@ -90,6 +90,32 @@
             </a>
         </section>
 
+        <section class="new-song-stage" id="newSongs">
+            <div class="section-heading">
+                <p>NEW RELEASE PICKS</p>
+                <h2>新歌推薦</h2>
+            </div>
+
+            <div class="new-song-grid" id="newSongGrid">
+                {% for song in new_song_recommendations %}
+                    <a href="{{ song.spotify_url }}" target="_blank" rel="noopener noreferrer" class="new-song-card">
+                        <div class="new-song-art">
+                            {% if song.image %}
+                                <img src="{{ song.image }}" alt="{{ song.name }}">
+                            {% else %}
+                                <span>{{ song.name[:1] }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="new-song-info">
+                            <strong>{{ song.name }}</strong>
+                            <span>{{ song.artist }}</span>
+                            <small>{{ song.release_date }}</small>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+
         <section class="popular-stage">
             <div class="section-heading">
                 <p>熱門搜尋</p>
@@ -121,6 +147,7 @@
         const searchButton = document.getElementById('searchButton');
         const loadingPanel = document.getElementById('loadingPanel');
         const artistLinks = document.querySelectorAll('.artist-loading-link');
+        const newSongGrid = document.getElementById('newSongGrid');
 
         function showLoading() {
             loadingPanel.classList.add('visible');
@@ -132,6 +159,62 @@
         artistLinks.forEach((link) => {
             link.addEventListener('click', showLoading);
         });
+
+        function escapeHtml(value) {
+            return String(value || '').replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[char]);
+        }
+
+        function renderNewSongs(songs) {
+            if (!newSongGrid || !songs.length) {
+                return;
+            }
+
+            newSongGrid.innerHTML = songs.map((song) => {
+                const art = song.image
+                    ? `<img src="${escapeHtml(song.image)}" alt="${escapeHtml(song.name)}">`
+                    : `<span>${escapeHtml((song.name || '?').slice(0, 1))}</span>`;
+
+                return `
+                    <a href="${escapeHtml(song.spotify_url || '#')}" target="_blank" rel="noopener noreferrer" class="new-song-card">
+                        <div class="new-song-art">${art}</div>
+                        <div class="new-song-info">
+                            <strong>${escapeHtml(song.name)}</strong>
+                            <span>${escapeHtml(song.artist)}</span>
+                            <small>${escapeHtml(song.release_date)}</small>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        async function refreshNewSongs() {
+            if (!newSongGrid) {
+                return;
+            }
+
+            try {
+                newSongGrid.classList.add('is-refreshing');
+                const response = await fetch('/api/new-songs', {
+                    headers: {
+                        Accept: 'application/json'
+                    }
+                });
+                const data = await response.json();
+                renderNewSongs(data.songs || []);
+            } catch (error) {
+                console.error('Unable to refresh new songs', error);
+            } finally {
+                newSongGrid.classList.remove('is-refreshing');
+            }
+        }
+
+        setInterval(refreshNewSongs, 30000);
     </script>
 </body>
 </html>
