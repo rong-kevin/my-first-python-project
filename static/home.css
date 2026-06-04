@@ -376,6 +376,39 @@
     margin: 0 0 24px;
 }
 
+.new-song-heading {
+    align-items: flex-end;
+    display: flex;
+    gap: 18px;
+    justify-content: space-between;
+}
+
+.refresh-songs-btn {
+    background: rgba(30, 215, 96, 0.14);
+    border: 1px solid rgba(30, 215, 96, 0.42);
+    border-radius: 999px;
+    color: #b8f7c8;
+    cursor: pointer;
+    flex: 0 0 auto;
+    font-size: 15px;
+    font-weight: 900;
+    margin-bottom: 28px;
+    padding: 11px 16px;
+    transition: 0.2s ease;
+}
+
+.refresh-songs-btn:hover {
+    background: #1ed760;
+    color: #061008;
+    transform: translateY(-1px);
+}
+
+.refresh-songs-btn:disabled {
+    cursor: wait;
+    opacity: 0.62;
+    transform: none;
+}
+
 .new-song-grid {
     display: grid;
     gap: 14px;
@@ -603,6 +636,16 @@
     .hero-actions,
     .quick-index {
         grid-template-columns: 1fr;
+    }
+
+    .new-song-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .refresh-songs-btn {
+        margin-bottom: 18px;
+        width: 100%;
     }
 
     .primary-pill,
