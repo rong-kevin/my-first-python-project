@@ -54,7 +54,7 @@
 
             <div class="hero-visual" aria-hidden="true">
                 <div class="album-wall">
-                    {% for card in popular_artist_cards[:6] %}
+                    {% for card in hero_artist_cards %}
                         <div class="album-tile tile-{{ loop.index }}">
                             {% if card.image %}
                                 <img src="{{ card.image }}" alt="">

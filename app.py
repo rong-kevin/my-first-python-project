@@ -231,10 +231,16 @@ def build_discover_recommendation(filter_key):
 
 @app.route("/")
 def home():
+    hero_artist_names = random.sample(
+        POPULAR_ARTISTS,
+        min(6, len(POPULAR_ARTISTS))
+    )
+    hero_artist_cards = get_artist_previews(hero_artist_names)
     popular_artist_cards = get_artist_previews(POPULAR_ARTISTS)
     return render_template(
         "index.html",
         popular_artists=POPULAR_ARTISTS,
+        hero_artist_cards=hero_artist_cards,
         popular_artist_cards=popular_artist_cards
     )
 
