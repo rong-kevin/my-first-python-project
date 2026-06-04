@@ -229,12 +229,35 @@ def build_discover_recommendation(filter_key):
     return recommendation
 
 
+def pick_hero_artists(count=6):
+    pick_count = min(count, len(POPULAR_ARTISTS))
+    used_artists = set(session.get("used_hero_artists", []))
+    last_artists = set(session.get("last_hero_artists", []))
+    available_artists = [
+        artist for artist in POPULAR_ARTISTS
+        if artist not in used_artists
+    ]
+
+    if len(available_artists) < pick_count:
+        used_artists = set()
+        available_artists = [
+            artist for artist in POPULAR_ARTISTS
+            if artist not in last_artists
+        ]
+
+    if len(available_artists) < pick_count:
+        available_artists = list(POPULAR_ARTISTS)
+
+    selected_artists = random.sample(available_artists, pick_count)
+    used_artists.update(selected_artists)
+    session["used_hero_artists"] = list(used_artists)
+    session["last_hero_artists"] = selected_artists
+    return selected_artists
+
+
 @app.route("/")
 def home():
-    hero_artist_names = random.sample(
-        POPULAR_ARTISTS,
-        min(6, len(POPULAR_ARTISTS))
-    )
+    hero_artist_names = pick_hero_artists()
     hero_artist_cards = get_artist_previews(hero_artist_names)
     popular_artist_cards = get_artist_previews(POPULAR_ARTISTS)
     return render_template(
