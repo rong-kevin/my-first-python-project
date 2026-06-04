@@ -300,64 +300,24 @@ def get_artist_recent_singles(artist_name, limit=2):
 
 
 def get_new_song_recommendations(artist_names, count=6):
-    token = get_access_token()
-    search_url = "https://api.spotify.com/v1/search"
-    headers = {
-        "Authorization": f"Bearer {token}"
-    }
-    years = list(range(MIN_NEW_RELEASE_YEAR, date.today().year + 1))
-    random.shuffle(years)
+    artists = list(artist_names)
+    random.shuffle(artists)
     recommendations = []
     seen = set()
 
-    for year in years:
+    for artist_name in artists:
         try:
-            response = requests.get(
-                search_url,
-                headers=headers,
-                params={
-                    "q": f"year:{year}",
-                    "type": "track",
-                    "market": "TW",
-                    "limit": 30,
-                    "offset": random.randint(0, 20)
-                },
-                timeout=10
-            )
-            response.raise_for_status()
+            songs = get_artist_recent_singles(artist_name)
         except Exception:
             continue
 
-        tracks = response.json().get("tracks", {}).get("items", [])
-        random.shuffle(tracks)
-
-        for track in tracks:
-            album = track.get("album", {})
-            release_date = album.get("release_date", "")
-            release_year = release_date[:4]
-            song_name = track.get("name", "")
-            artist_text = ", ".join(
-                artist.get("name", "")
-                for artist in track.get("artists", [])
-                if artist.get("name")
-            )
-
-            if not release_year.isdigit() or int(release_year) < MIN_NEW_RELEASE_YEAR:
-                continue
-
-            key = (artist_text, song_name)
-            if not artist_text or not song_name or key in seen:
+        for song in songs:
+            key = (song["artist"], song["name"])
+            if key in seen:
                 continue
 
             seen.add(key)
-            recommendations.append({
-                "name": song_name,
-                "artist": artist_text,
-                "release_date": release_date,
-                "image": album.get("images", [{}])[0].get("url") if album.get("images") else None,
-                "spotify_url": track.get("external_urls", {}).get("spotify", "#")
-            })
-
+            recommendations.append(song)
             if len(recommendations) >= count:
                 return recommendations
 

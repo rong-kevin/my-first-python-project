@@ -14,6 +14,9 @@ from services.wiki_scraper import get_artist_bio
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "artist-explorer-dev-secret")
+RECENT_SEARCH_HISTORY_LIMIT = 30
+RECENT_SEARCH_ARTIST_LIMIT = 8
+recent_search_history = []
 
 POPULAR_ARTISTS = [
     "Taylor Swift",
@@ -260,12 +263,28 @@ def pick_hero_artists(count=6):
     return selected_artists
 
 
+def remember_recent_artist(artist_name):
+    recent_search_history.append(artist_name)
+    del recent_search_history[:-RECENT_SEARCH_HISTORY_LIMIT]
+
+
+def get_new_song_artist_source():
+    if not recent_search_history:
+        return POPULAR_ARTISTS
+
+    search_counts = Counter(recent_search_history)
+    return [
+        artist
+        for artist, _ in search_counts.most_common(RECENT_SEARCH_ARTIST_LIMIT)
+    ]
+
+
 @app.route("/")
 def home():
     hero_artist_names = pick_hero_artists()
     hero_artist_cards = get_artist_previews(hero_artist_names)
     popular_artist_cards = get_artist_previews(POPULAR_ARTISTS)
-    new_song_recommendations = get_new_song_recommendations(POPULAR_ARTISTS)
+    new_song_recommendations = get_new_song_recommendations(get_new_song_artist_source())
     return render_template(
         "index.html",
         popular_artists=POPULAR_ARTISTS,
@@ -278,7 +297,7 @@ def home():
 @app.route("/api/new-songs")
 def new_songs_api():
     return jsonify({
-        "songs": get_new_song_recommendations(POPULAR_ARTISTS)
+        "songs": get_new_song_recommendations(get_new_song_artist_source())
     })
 
 
@@ -332,6 +351,8 @@ def artist_page():
                 "artist.html",
                 error="找不到這位歌手"
             )
+
+        remember_recent_artist(artist["name"])
 
         albums = get_artist_albums(artist_name)
         similar_artists = get_similar_artists(artist_name)
