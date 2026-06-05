@@ -295,7 +295,8 @@ def artist_page():
         similar_artists = get_similar_artists(artist_name)
         artist_tags = get_artist_tags(artist_name)
         artist_bio = get_artist_bio(artist_name)
-        concert_events = get_upcoming_concerts(artist.get("name") or artist_name)
+        concert_data = get_upcoming_concerts(artist.get("name") or artist_name)
+        concert_events = concert_data.get("events", [])
         style_insights = build_style_insights(artist_tags, similar_artists)
 
         album_years = []
@@ -342,6 +343,7 @@ def artist_page():
             artist_bio=artist_bio,
             style_insights=style_insights,
             concert_events=concert_events,
+            concert_message=concert_data.get("message"),
             chart_labels=chart_labels,
             album_chart_values=album_chart_values,
             single_chart_values=single_chart_values,

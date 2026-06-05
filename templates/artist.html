@@ -161,7 +161,7 @@
                     {% else %}
                         <div class="spotify-unavailable compact">
                             <strong>未找到未來一年公開演唱會</strong>
-                            <p>這位歌手目前可能沒有公開巡演資料，或 Ticketmaster 尚未收錄。</p>
+                            <p>{{ concert_message or "Ticketmaster 目前沒有這位歌手未來一年的公開場次。" }}</p>
                         </div>
                     {% endif %}
                 </div>
