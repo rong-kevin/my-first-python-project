@@ -397,6 +397,78 @@ a:hover {
         #151515;
 }
 
+.concerts-section {
+    background:
+        radial-gradient(circle at 92% 0%, rgba(30, 215, 96, 0.13), transparent 30%),
+        rgba(255, 255, 255, 0.07);
+}
+
+.concert-layout {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: minmax(320px, 1.25fr) minmax(260px, 0.75fr);
+}
+
+.concert-map {
+    background: rgba(0, 0, 0, 0.24);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    min-height: 360px;
+    overflow: hidden;
+}
+
+.concert-list {
+    display: grid;
+    gap: 10px;
+    max-height: 360px;
+    overflow: auto;
+    padding-right: 4px;
+}
+
+.concert-card {
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    color: #fff;
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+    transition: 0.2s ease;
+}
+
+.concert-card:hover {
+    background: rgba(30, 215, 96, 0.13);
+    border-color: rgba(30, 215, 96, 0.38);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.concert-card strong {
+    color: #b8f7c8;
+    font-size: 16px;
+}
+
+.concert-card span {
+    color: #fff;
+    font-weight: 900;
+}
+
+.concert-card small {
+    color: rgba(255, 255, 255, 0.64);
+    line-height: 1.5;
+}
+
+.leaflet-container {
+    background: #101010;
+    font-family: Arial, "Microsoft JhengHei", sans-serif;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    background: #151515;
+    color: #fff;
+}
+
 .chart-note {
     font-size: 16px;
     line-height: 1.7;
@@ -728,8 +800,13 @@ a:hover {
     }
 
     .artist-hero,
-    .artist-content-grid {
+    .artist-content-grid,
+    .concert-layout {
         grid-template-columns: 1fr;
+    }
+
+    .concert-list {
+        max-height: none;
     }
 
     .artist-title {

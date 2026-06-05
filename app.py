@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, redirect, session, url_for
 from services.spotify_api import search_artist, get_artist_albums, get_artist_previews
 from services.lastfm_api import get_similar_artists, get_artist_tags
 from services.wiki_scraper import get_artist_bio
+from services.concert_api import get_upcoming_concerts
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "artist-explorer-dev-secret")
@@ -294,6 +295,7 @@ def artist_page():
         similar_artists = get_similar_artists(artist_name)
         artist_tags = get_artist_tags(artist_name)
         artist_bio = get_artist_bio(artist_name)
+        concert_events = get_upcoming_concerts(artist.get("name") or artist_name)
         style_insights = build_style_insights(artist_tags, similar_artists)
 
         album_years = []
@@ -339,6 +341,7 @@ def artist_page():
             artist_tags=artist_tags,
             artist_bio=artist_bio,
             style_insights=style_insights,
+            concert_events=concert_events,
             chart_labels=chart_labels,
             album_chart_values=album_chart_values,
             single_chart_values=single_chart_values,

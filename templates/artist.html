@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>歌手資料頁</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
     <div class="container">
@@ -133,6 +135,35 @@
                         <h2>生平簡介</h2>
                         <p class="bio-text">{{ artist_bio }}</p>
                     </div>
+                </div>
+
+                <div class="section-card concerts-section">
+                    <div class="section-title-row">
+                        <div>
+                            <h2>未來一年演唱會</h2>
+                            <p>整理 Bandsintown 提供的近期公開場次，地圖標註點可移入或點擊查看日期、場館與位置。</p>
+                        </div>
+                    </div>
+
+                    {% if concert_events %}
+                        <div class="concert-layout">
+                            <div id="concertMap" class="concert-map" aria-label="演唱會地圖"></div>
+                            <div class="concert-list">
+                                {% for concert in concert_events %}
+                                    <a class="concert-card" href="{{ concert.url }}" target="_blank" rel="noopener noreferrer">
+                                        <strong>{{ concert.date }}</strong>
+                                        <span>{{ concert.venue }}</span>
+                                        <small>{{ concert.city }}{% if concert.region %}, {{ concert.region }}{% endif %}{% if concert.country %}, {{ concert.country }}{% endif %}</small>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="spotify-unavailable compact">
+                            <strong>未找到未來一年公開演唱會</strong>
+                            <p>這位歌手目前可能沒有公開巡演資料，或 Bandsintown 尚未收錄。</p>
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="section-card chart-section">
@@ -350,5 +381,43 @@
             {% endif %}
         </div>
     </div>
+    {% if not error and concert_events %}
+        <script>
+            const concertEvents = {{ concert_events | tojson }};
+            const mappedConcerts = concertEvents.filter((event) => event.latitude && event.longitude);
+
+            if (mappedConcerts.length > 0 && window.L) {
+                const map = L.map('concertMap', {
+                    scrollWheelZoom: false
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                const bounds = [];
+
+                mappedConcerts.forEach((event) => {
+                    const location = [event.latitude, event.longitude];
+                    bounds.push(location);
+
+                    const marker = L.marker(location).addTo(map);
+                    const details = `
+                        <strong>${event.date}</strong><br>
+                        ${event.venue}<br>
+                        ${[event.city, event.region, event.country].filter(Boolean).join(', ')}
+                    `;
+
+                    marker.bindPopup(details);
+                    marker.on('mouseover', () => marker.openPopup());
+                });
+
+                map.fitBounds(bounds, {
+                    maxZoom: 8,
+                    padding: [28, 28]
+                });
+            }
+        </script>
+    {% endif %}
 </body>
 </html>
