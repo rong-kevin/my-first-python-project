@@ -189,6 +189,98 @@ a:hover {
 
 .artist-page-card {
     overflow: hidden;
+    position: relative;
+}
+
+.artist-page-card > *:not(.artist-motion-backdrop) {
+    position: relative;
+    z-index: 1;
+}
+
+.artist-motion-backdrop {
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+}
+
+.artist-motion-backdrop::after {
+    background:
+        linear-gradient(180deg, rgba(10, 10, 10, 0.58), rgba(10, 10, 10, 0.92)),
+        radial-gradient(circle at 50% 22%, transparent, rgba(0, 0, 0, 0.68) 64%);
+    content: "";
+    inset: 0;
+    position: absolute;
+}
+
+.artist-motion-backdrop img {
+    animation: motionBackdropDrift 18s ease-in-out infinite alternate;
+    filter: grayscale(1) contrast(1.18) brightness(0.62) blur(20px);
+    height: 120%;
+    left: -10%;
+    object-fit: cover;
+    opacity: 0.32;
+    position: absolute;
+    top: -10%;
+    transform: scale(1.08);
+    width: 120%;
+}
+
+.motion-light {
+    border-radius: 999px;
+    filter: blur(42px);
+    opacity: 0.34;
+    position: absolute;
+}
+
+.motion-light-one {
+    animation: motionLightOne 11s ease-in-out infinite alternate;
+    background: rgba(255, 255, 255, 0.26);
+    height: 220px;
+    right: 12%;
+    top: 12%;
+    width: 360px;
+}
+
+.motion-light-two {
+    animation: motionLightTwo 14s ease-in-out infinite alternate;
+    background: rgba(30, 215, 96, 0.18);
+    bottom: 18%;
+    height: 240px;
+    left: 8%;
+    width: 320px;
+}
+
+.motion-scanline {
+    animation: scanlineMove 8s linear infinite;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+    height: 100%;
+    left: -42%;
+    position: absolute;
+    top: 0;
+    transform: skewX(-18deg);
+    width: 34%;
+}
+
+@keyframes motionBackdropDrift {
+    from { transform: scale(1.08) translate3d(-1%, -1%, 0); }
+    to { transform: scale(1.16) translate3d(2%, 2%, 0); }
+}
+
+@keyframes motionLightOne {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(-80px, 48px, 0) scale(1.12); }
+}
+
+@keyframes motionLightTwo {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(96px, -40px, 0) scale(1.18); }
+}
+
+@keyframes scanlineMove {
+    from { left: -42%; }
+    to { left: 112%; }
 }
 
 .artist-hero {
@@ -410,9 +502,12 @@ a:hover {
 }
 
 .concert-map {
-    background: rgba(0, 0, 0, 0.24);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #050505;
+    border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 18px;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 18px 36px rgba(0, 0, 0, 0.32);
     min-height: 360px;
     overflow: hidden;
 }
@@ -463,9 +558,25 @@ a:hover {
     font-family: Arial, "Microsoft JhengHei", sans-serif;
 }
 
+.concert-map .leaflet-tile {
+    filter: grayscale(1) contrast(1.22) brightness(0.72);
+}
+
+.concert-map .leaflet-marker-icon {
+    filter: grayscale(1) contrast(1.28) brightness(1.18) drop-shadow(0 0 10px rgba(255, 255, 255, 0.42));
+}
+
+.concert-map .leaflet-control-attribution,
+.concert-map .leaflet-control-zoom a {
+    background: rgba(12, 12, 12, 0.86);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.72);
+}
+
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
-    background: #151515;
+    background: #0d0d0d;
+    border: 1px solid rgba(255, 255, 255, 0.16);
     color: #fff;
 }
 

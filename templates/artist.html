@@ -20,6 +20,15 @@
                     <p>可以回首頁重新搜尋，或從情境推薦、風格探索開始找歌手。</p>
                 </div>
             {% else %}
+                <div class="artist-motion-backdrop" aria-hidden="true">
+                    {% if artist.image %}
+                        <img src="{{ artist.image }}" alt="">
+                    {% endif %}
+                    <div class="motion-light motion-light-one"></div>
+                    <div class="motion-light motion-light-two"></div>
+                    <div class="motion-scanline"></div>
+                </div>
+
                 <div class="artist-hero">
                     <div class="artist-image-wrap">
                         {% if artist.image %}
@@ -391,8 +400,8 @@
                     scrollWheelZoom: false
                 });
 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap contributors'
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
                 }).addTo(map);
 
                 const bounds = [];
