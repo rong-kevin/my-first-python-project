@@ -11,6 +11,37 @@ from services.spotify_api import (
 from services.lastfm_api import get_similar_artists, get_artist_tags
 from services.wiki_scraper import get_artist_bio
 
+
+def build_backup_artist(artist_name):
+    return {
+        "name": artist_name,
+        "followers": "N/A",
+        "genres": [],
+        "image": None,
+        "spotify_url": "#",
+        "embed_url": "#"
+    }
+
+
+def build_backup_albums(artist_name):
+    return [
+        {
+            "name": f"{artist_name} 代表作品",
+            "release_date": "資料備援模式",
+            "album_type": "album",
+            "image": None,
+            "spotify_url": "#"
+        },
+        {
+            "name": f"{artist_name} 熱門單曲",
+            "release_date": "資料備援模式",
+            "album_type": "single",
+            "image": None,
+            "spotify_url": "#"
+        }
+    ]
+
+
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "artist-explorer-dev-secret")
 
@@ -315,18 +346,40 @@ def artist_page():
         )
 
     try:
-        artist = search_artist(artist_name)
+        spotify_unavailable = False
+        data_status = {
+            "spotify": "已取得",
+            "lastfm": "等待中",
+            "wikipedia": "等待中"
+        }
+
+        try:
+            artist = search_artist(artist_name)
+        except Exception:
+            artist = build_backup_artist(artist_name)
+            spotify_unavailable = True
+            data_status["spotify"] = "限流中，已切換備用資料"
 
         if not artist:
-            return render_template(
-                "artist.html",
-                error="找不到這位歌手"
-            )
+            artist = build_backup_artist(artist_name)
+            spotify_unavailable = True
+            data_status["spotify"] = "查無資料，已切換備用資料"
 
-        albums = get_artist_albums(artist_name)
+        try:
+            albums = [] if spotify_unavailable else get_artist_albums(artist_name)
+        except Exception:
+            albums = []
+            spotify_unavailable = True
+            data_status["spotify"] = "限流中，專輯暫時無法取得"
+
+        if spotify_unavailable and not albums:
+            albums = build_backup_albums(artist["name"])
+
         similar_artists = get_similar_artists(artist_name)
         artist_tags = get_artist_tags(artist_name)
         artist_bio = get_artist_bio(artist_name)
+        data_status["lastfm"] = "已取得" if artist_tags or similar_artists else "暫時無資料"
+        data_status["wikipedia"] = "已取得" if artist_bio else "暫時無資料"
         style_insights = build_style_insights(artist_tags, similar_artists)
 
         album_years = []
@@ -373,6 +426,8 @@ def artist_page():
             album_chart_values=album_chart_values,
             single_chart_values=single_chart_values,
             chart_summary=chart_summary,
+            spotify_unavailable=spotify_unavailable,
+            data_status=data_status,
             error=None
         )
 

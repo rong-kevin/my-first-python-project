@@ -39,10 +39,26 @@
                             {% endif %}
                         </div>
 
+                        <div class="data-status-row">
+                            <span class="{{ 'warning' if spotify_unavailable else '' }}">Spotify：{{ data_status.spotify }}</span>
+                            <span>Last.fm：{{ data_status.lastfm }}</span>
+                            <span>Wikipedia：{{ data_status.wikipedia }}</span>
+                        </div>
+
+                        {% if spotify_unavailable %}
+                            <div class="backup-notice">
+                                Spotify 目前暫時限制請求，頁面已切換成備用資料模式；Last.fm 與 Wikipedia 可用時仍會繼續顯示。
+                            </div>
+                        {% endif %}
+
                         <div class="artist-actions">
-                            <a href="{{ artist.spotify_url }}" target="_blank" rel="noopener noreferrer" class="spotify-link">
-                                在 Spotify 開啟
-                            </a>
+                            {% if artist.spotify_url and artist.spotify_url != '#' %}
+                                <a href="{{ artist.spotify_url }}" target="_blank" rel="noopener noreferrer" class="spotify-link">
+                                    在 Spotify 開啟
+                                </a>
+                            {% else %}
+                                <span class="spotify-link disabled">Spotify 暫時無法連線</span>
+                            {% endif %}
                         </div>
 
                         <div class="artist-stat-grid">
@@ -109,13 +125,19 @@
                 <div class="artist-content-grid">
                     <div class="section-card spotify-section">
                         <h2>Spotify 播放器</h2>
-                        <iframe
-                            src="{{ artist.embed_url }}"
-                            class="spotify-embed"
-                            allowfullscreen=""
-                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                            loading="lazy">
-                        </iframe>
+                        {% if spotify_unavailable or not artist.embed_url or artist.embed_url == '#' %}
+                            <div class="spotify-fallback-box">
+                                Spotify 目前被限流，播放器暫時無法載入。這裡保留區塊，等 API 恢復後會自動回到播放器。
+                            </div>
+                        {% else %}
+                            <iframe
+                                src="{{ artist.embed_url }}"
+                                class="spotify-embed"
+                                allowfullscreen=""
+                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                loading="lazy">
+                            </iframe>
+                        {% endif %}
                     </div>
 
                     <div class="section-card bio-section">
@@ -168,6 +190,14 @@
                     <ul class="album-list" id="albumList">
                         {% for album in albums %}
                             <li class="album-row" data-type="{{ album.album_type }}">
+                                <div class="album-cover">
+                                    {% if album.image %}
+                                        <img src="{{ album.image }}" alt="{{ album.name }}">
+                                    {% else %}
+                                        <span>{{ album.name[:1] }}</span>
+                                    {% endif %}
+                                </div>
+
                                 <div class="album-main">
                                     {% if album.spotify_url and album.spotify_url != '#' %}
                                         <a href="{{ album.spotify_url }}" target="_blank" rel="noopener noreferrer" class="album-title">{{ album.name }}</a>

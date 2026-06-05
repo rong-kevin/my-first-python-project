@@ -227,8 +227,8 @@ def get_artist_albums(artist_name):
             "name": album_name,
             "release_date": album.get("release_date", "無資料"),
             "album_type": album.get("album_type", "album"),
+            "image": album.get("images", [{}])[0].get("url") if album.get("images") else None,
             "spotify_url": album.get("external_urls", {}).get("spotify", "#")
         })
 
     return result
-
