@@ -115,36 +115,6 @@
             </div>
         </section>
 
-        <section class="new-song-stage" id="newSongs">
-            <div class="section-heading new-song-heading">
-                <div>
-                    <p>NEW RELEASE PICKS</p>
-                    <h2>新歌推薦</h2>
-                </div>
-                <button type="button" class="refresh-songs-btn" id="refreshSongsButton">更新推薦</button>
-            </div>
-
-            <div class="new-song-grid" id="newSongGrid">
-                {% for song in new_song_recommendations %}
-                    <a href="{{ song.spotify_url }}" target="_blank" rel="noopener noreferrer" class="new-song-card">
-                        <div class="new-song-art">
-                            {% if song.image %}
-                                <img src="{{ song.image }}" alt="{{ song.name }}">
-                            {% else %}
-                                <span>{{ song.name[:1] }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="new-song-info">
-                            <strong>{{ song.name }}</strong>
-                            <span>{{ song.artist }}</span>
-                            <small>{{ song.release_date }}</small>
-                        </div>
-                    </a>
-                {% else %}
-                    <div class="new-song-empty">正在取得新歌推薦，請稍候。</div>
-                {% endfor %}
-            </div>
-        </section>
     </main>
 
     <script>
@@ -152,8 +122,6 @@
         const searchButton = document.getElementById('searchButton');
         const loadingPanel = document.getElementById('loadingPanel');
         const artistLinks = document.querySelectorAll('.artist-loading-link');
-        const newSongGrid = document.getElementById('newSongGrid');
-        const refreshSongsButton = document.getElementById('refreshSongsButton');
 
         function showLoading() {
             loadingPanel.classList.add('visible');
@@ -166,76 +134,6 @@
             link.addEventListener('click', showLoading);
         });
 
-        function escapeHtml(value) {
-            return String(value || '').replace(/[&<>"']/g, (char) => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;'
-            })[char]);
-        }
-
-        function renderNewSongs(songs) {
-            if (!newSongGrid) {
-                return;
-            }
-
-            if (!songs.length) {
-                newSongGrid.innerHTML = '<div class="new-song-empty">暫時抓不到新歌推薦，稍後會自動重試。</div>';
-                return;
-            }
-
-            newSongGrid.innerHTML = songs.map((song) => {
-                const art = song.image
-                    ? `<img src="${escapeHtml(song.image)}" alt="${escapeHtml(song.name)}">`
-                    : `<span>${escapeHtml((song.name || '?').slice(0, 1))}</span>`;
-
-                return `
-                    <a href="${escapeHtml(song.spotify_url || '#')}" target="_blank" rel="noopener noreferrer" class="new-song-card">
-                        <div class="new-song-art">${art}</div>
-                        <div class="new-song-info">
-                            <strong>${escapeHtml(song.name)}</strong>
-                            <span>${escapeHtml(song.artist)}</span>
-                            <small>${escapeHtml(song.release_date)}</small>
-                        </div>
-                    </a>
-                `;
-            }).join('');
-        }
-
-        async function refreshNewSongs() {
-            if (!newSongGrid) {
-                return;
-            }
-
-            try {
-                newSongGrid.classList.add('is-refreshing');
-                if (refreshSongsButton) {
-                    refreshSongsButton.disabled = true;
-                    refreshSongsButton.textContent = '更新中...';
-                }
-                const response = await fetch('/api/new-songs', {
-                    headers: {
-                        Accept: 'application/json'
-                    }
-                });
-                const data = await response.json();
-                renderNewSongs(data.songs || []);
-            } catch (error) {
-                console.error('Unable to refresh new songs', error);
-            } finally {
-                newSongGrid.classList.remove('is-refreshing');
-                if (refreshSongsButton) {
-                    refreshSongsButton.disabled = false;
-                    refreshSongsButton.textContent = '更新推薦';
-                }
-            }
-        }
-
-        if (refreshSongsButton) {
-            refreshSongsButton.addEventListener('click', refreshNewSongs);
-        }
     </script>
 </body>
 </html>

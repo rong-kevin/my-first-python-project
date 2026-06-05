@@ -1,7 +1,5 @@
 import base64
 import os
-import random
-from datetime import date
 from functools import lru_cache
 
 import requests
@@ -11,7 +9,6 @@ load_dotenv()
 
 CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
-MIN_NEW_RELEASE_YEAR = date.today().year - 2
 artist_preview_cache = {}
 
 
@@ -235,91 +232,3 @@ def get_artist_albums(artist_name):
 
     return result
 
-
-def get_artist_recent_singles(artist_name, limit=2):
-    token = get_access_token()
-
-    search_url = "https://api.spotify.com/v1/search"
-    headers = {
-        "Authorization": f"Bearer {token}"
-    }
-    params = {
-        "q": artist_name,
-        "type": "artist",
-        "limit": 1
-    }
-
-    search_response = requests.get(search_url, headers=headers, params=params, timeout=10)
-    search_response.raise_for_status()
-
-    items = search_response.json().get("artists", {}).get("items", [])
-    if not items:
-        return []
-
-    artist = items[0]
-    artist_id = artist["id"]
-    resolved_artist_name = artist.get("name", artist_name)
-
-    albums_url = f"https://api.spotify.com/v1/artists/{artist_id}/albums"
-    albums_response = requests.get(
-        albums_url,
-        headers=headers,
-        params={
-            "include_groups": "single",
-            "limit": 10,
-            "market": "TW"
-        },
-        timeout=10
-    )
-    albums_response.raise_for_status()
-
-    songs = []
-    seen = set()
-    for album in albums_response.json().get("items", []):
-        song_name = album.get("name")
-        release_date = album.get("release_date", "")
-        release_year = release_date[:4]
-        if not song_name or song_name in seen:
-            continue
-
-        if not release_year.isdigit() or int(release_year) < MIN_NEW_RELEASE_YEAR:
-            continue
-
-        seen.add(song_name)
-        songs.append({
-            "name": song_name,
-            "artist": resolved_artist_name,
-            "release_date": release_date,
-            "image": album.get("images", [{}])[0].get("url") if album.get("images") else None,
-            "spotify_url": album.get("external_urls", {}).get("spotify", "#")
-        })
-
-        if len(songs) >= limit:
-            break
-
-    return songs
-
-
-def get_new_song_recommendations(artist_names, count=6):
-    artists = list(artist_names)
-    random.shuffle(artists)
-    recommendations = []
-    seen = set()
-
-    for artist_name in artists:
-        try:
-            songs = get_artist_recent_singles(artist_name)
-        except Exception:
-            continue
-
-        for song in songs:
-            key = (song["artist"], song["name"])
-            if key in seen:
-                continue
-
-            seen.add(key)
-            recommendations.append(song)
-            if len(recommendations) >= count:
-                return recommendations
-
-    return recommendations
