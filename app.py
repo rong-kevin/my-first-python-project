@@ -44,6 +44,7 @@ def build_backup_albums(artist_name):
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "artist-explorer-dev-secret")
+SPOTIFY_PAUSED = os.getenv("SPOTIFY_PAUSED", "").lower() in ("1", "true", "yes", "on")
 
 POPULAR_ARTISTS = [
     "Taylor Swift",
@@ -353,12 +354,17 @@ def artist_page():
             "wikipedia": "等待中"
         }
 
-        try:
-            artist = search_artist(artist_name)
-        except Exception:
+        if SPOTIFY_PAUSED:
             artist = build_backup_artist(artist_name)
             spotify_unavailable = True
-            data_status["spotify"] = "限流中，已切換備用資料"
+            data_status["spotify"] = "已暫停 24 小時，使用備用資料"
+        else:
+            try:
+                artist = search_artist(artist_name)
+            except Exception:
+                artist = build_backup_artist(artist_name)
+                spotify_unavailable = True
+                data_status["spotify"] = "限流中，已切換備用資料"
 
         if not artist:
             artist = build_backup_artist(artist_name)
