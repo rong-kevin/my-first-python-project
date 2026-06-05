@@ -316,11 +316,14 @@ def artist_page():
         single_chart_values = [single_counts[year] for year in chart_labels]
         album_total = sum(album_chart_values)
         single_total = sum(single_chart_values)
+        if not chart_labels and albums:
+            album_total = len([album for album in albums if album.get("album_type") != "single"])
+            single_total = len([album for album in albums if album.get("album_type") == "single"])
         yearly_totals = {
             year: album_counts[year] + single_counts[year]
             for year in chart_labels
         }
-        most_active_year = max(yearly_totals, key=yearly_totals.get) if yearly_totals else "無資料"
+        most_active_year = max(yearly_totals, key=yearly_totals.get) if yearly_totals else "Last.fm"
         chart_summary = {
             "total": album_total + single_total,
             "albums": album_total,

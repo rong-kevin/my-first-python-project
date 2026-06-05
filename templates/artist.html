@@ -40,9 +40,13 @@
                         </div>
 
                         <div class="artist-actions">
-                            <a href="{{ artist.spotify_url }}" target="_blank" rel="noopener noreferrer" class="spotify-link">
-                                在 Spotify 開啟
-                            </a>
+                            {% if artist.spotify_url and artist.spotify_url != '#' %}
+                                <a href="{{ artist.spotify_url }}" target="_blank" rel="noopener noreferrer" class="spotify-link">
+                                    在 Spotify 開啟
+                                </a>
+                            {% else %}
+                                <span class="spotify-link disabled">使用 Last.fm 備援資料</span>
+                            {% endif %}
                         </div>
 
                         <div class="artist-stat-grid">
@@ -109,13 +113,20 @@
                 <div class="artist-content-grid">
                     <div class="section-card spotify-section">
                         <h2>Spotify 播放器</h2>
-                        <iframe
-                            src="{{ artist.embed_url }}"
-                            class="spotify-embed"
-                            allowfullscreen=""
-                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                            loading="lazy">
-                        </iframe>
+                        {% if artist.embed_url and artist.embed_url != '#' %}
+                            <iframe
+                                src="{{ artist.embed_url }}"
+                                class="spotify-embed"
+                                allowfullscreen=""
+                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                loading="lazy">
+                            </iframe>
+                        {% else %}
+                            <div class="spotify-unavailable">
+                                <strong>Spotify 目前無法提供播放器</strong>
+                                <p>已改用 Last.fm 與 Wikipedia 顯示歌手資料，專輯清單也會使用 Last.fm 熱門專輯。</p>
+                            </div>
+                        {% endif %}
                     </div>
 
                     <div class="section-card bio-section">
@@ -126,7 +137,11 @@
 
                 <div class="section-card chart-section">
                     <h2>作品年份分布圖</h2>
-                    <p class="chart-note">依 Spotify 作品類型區分專輯與單曲，方便比較不同年份的發行重點。</p>
+                    {% if chart_labels %}
+                        <p class="chart-note">依 Spotify 作品類型區分專輯與單曲，方便比較不同年份的發行重點。</p>
+                    {% else %}
+                        <p class="chart-note">Spotify 目前無法提供年份資料，已改用 Last.fm 熱門專輯清單顯示作品。</p>
+                    {% endif %}
 
                     <div class="chart-summary-grid">
                         <div class="chart-summary-card">
@@ -147,9 +162,16 @@
                         </div>
                     </div>
 
-                    <div class="chart-wrapper">
-                        <canvas id="yearChart"></canvas>
-                    </div>
+                    {% if chart_labels %}
+                        <div class="chart-wrapper">
+                            <canvas id="yearChart"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="spotify-unavailable compact">
+                            <strong>目前沒有可繪製的年份資料</strong>
+                            <p>Last.fm 提供熱門專輯名稱，但沒有發行年份，所以這裡先保留作品統計，不顯示空白圖表。</p>
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="section-card discography-section">
@@ -210,6 +232,7 @@
                     {% endif %}
                 </div>
 
+                {% if chart_labels %}
                 <script>
                     const labels = {{ chart_labels | tojson }};
                     const albumValues = {{ album_chart_values | tojson }};
@@ -323,6 +346,7 @@
                         });
                     });
                 </script>
+                {% endif %}
             {% endif %}
         </div>
     </div>

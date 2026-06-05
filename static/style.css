@@ -356,6 +356,41 @@ a:hover {
     width: 100%;
 }
 
+.spotify-link.disabled {
+    cursor: default;
+    opacity: 0.82;
+}
+
+.spotify-unavailable {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    min-height: 352px;
+    padding: 28px;
+    text-align: center;
+}
+
+.spotify-unavailable strong {
+    color: #fff;
+    font-size: 20px;
+}
+
+.spotify-unavailable p {
+    color: rgba(255, 255, 255, 0.68);
+    line-height: 1.7;
+    margin: 0;
+    max-width: 420px;
+}
+
+.spotify-unavailable.compact {
+    min-height: 180px;
+}
+
 .chart-section {
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.055)),
