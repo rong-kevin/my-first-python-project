@@ -21,7 +21,14 @@
                 </div>
             {% else %}
                 <div class="artist-motion-backdrop" aria-hidden="true">
-                    {% if artist.image %}
+                    {% if mv_embed_url %}
+                        <iframe
+                            src="{{ mv_embed_url }}"
+                            title="{{ artist.name }} MV background"
+                            allow="autoplay; encrypted-media"
+                            loading="lazy">
+                        </iframe>
+                    {% elif artist.image %}
                         <img src="{{ artist.image }}" alt="">
                     {% endif %}
                     <div class="motion-light motion-light-one"></div>
@@ -400,7 +407,7 @@
                     scrollWheelZoom: false
                 });
 
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                     attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
                 }).addTo(map);
 
