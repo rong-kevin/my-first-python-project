@@ -2,6 +2,9 @@ import os
 from datetime import datetime, timedelta, timezone
 
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 TICKETMASTER_API_KEY = os.getenv("TICKETMASTER_API_KEY")
 TICKETMASTER_BASE_URL = "https://app.ticketmaster.com/discovery/v2"
@@ -16,7 +19,7 @@ def ticketmaster_status(message, events=None):
 
 def ticketmaster_get(path, params):
     if not TICKETMASTER_API_KEY:
-        return None, "請在 .env 加上 TICKETMASTER_API_KEY"
+        return None, "請在 .env 加上 TICKETMASTER_API_KEY，並重新啟動網站。"
 
     query = {
         "apikey": TICKETMASTER_API_KEY,
@@ -24,13 +27,16 @@ def ticketmaster_get(path, params):
     }
 
     try:
-        response = requests.get(f"{TICKETMASTER_BASE_URL}/{path}", params=query, timeout=10)
+        response = requests.get(f"{TICKETMASTER_BASE_URL}/{path}", params=query, timeout=12)
+    except requests.exceptions.ConnectionError as error:
+        print(f"Ticketmaster connection failed: {error}")
+        return None, "Ticketmaster 暫時無法連線，請確認網路或 DNS 是否能連到 app.ticketmaster.com。"
     except requests.RequestException as error:
         print(f"Ticketmaster request failed: {error}")
-        return None, "Ticketmaster 暫時無法連線"
+        return None, "Ticketmaster 查詢暫時失敗，請稍後再試。"
 
     if response.status_code in {401, 403}:
-        return None, "Ticketmaster API key 尚未生效或未授權"
+        return None, "Ticketmaster API key 尚未生效、複製錯誤，或尚未授權 Public APIs。"
 
     if response.status_code == 404:
         return {}, None
@@ -39,7 +45,7 @@ def ticketmaster_get(path, params):
         response.raise_for_status()
     except requests.RequestException as error:
         print(f"Ticketmaster request failed: {error}")
-        return None, "Ticketmaster 查詢失敗"
+        return None, "Ticketmaster 查詢失敗，請稍後再試。"
 
     return response.json(), None
 
@@ -103,7 +109,7 @@ def search_events(params, artist_name):
 
 def get_upcoming_concerts(artist_name):
     if not artist_name:
-        return ticketmaster_status("請先輸入歌手名稱")
+        return ticketmaster_status("請先輸入歌手名稱。")
 
     today = datetime.now(timezone.utc)
     one_year_later = today + timedelta(days=365)
@@ -129,7 +135,7 @@ def get_upcoming_concerts(artist_name):
             return ticketmaster_status(event_error)
 
         if events:
-            return ticketmaster_status("Ticketmaster 已找到未來一年場次", events)
+            return ticketmaster_status("Ticketmaster 已找到未來一年場次。", events)
 
     events, keyword_error = search_events({
         **date_params,
@@ -140,6 +146,6 @@ def get_upcoming_concerts(artist_name):
         return ticketmaster_status(keyword_error)
 
     if events:
-        return ticketmaster_status("Ticketmaster 已找到未來一年場次", events)
+        return ticketmaster_status("Ticketmaster 已找到未來一年場次。", events)
 
-    return ticketmaster_status("Ticketmaster 目前沒有這位歌手未來一年的公開場次")
+    return ticketmaster_status("Ticketmaster 目前沒有這位歌手未來一年的公開場次。")
