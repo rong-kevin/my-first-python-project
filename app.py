@@ -1,6 +1,5 @@
 import os
 import random
-import re
 from collections import Counter
 
 from flask import Flask, render_template, request, redirect, session, url_for
@@ -11,28 +10,6 @@ from services.concert_api import get_upcoming_concerts
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "artist-explorer-dev-secret")
-
-
-def build_artist_mv_data(artist_name):
-    artist_key = re.sub(r"[^A-Z0-9]+", "_", artist_name.upper()).strip("_")
-    video_id = os.getenv(f"YOUTUBE_MV_{artist_key}") or os.getenv("YOUTUBE_MV_ID")
-
-    if not video_id:
-        return None
-
-    return {
-        "embed_url": (
-            f"https://www.youtube.com/embed/{video_id}"
-            "?autoplay=1&mute=1&loop=1&playlist="
-            f"{video_id}&controls=0&modestbranding=1&playsinline=1&rel=0"
-        ),
-        "poster_url": f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
-    }
-
-
-def build_artist_mv_embed_url(artist_name):
-    mv_data = build_artist_mv_data(artist_name)
-    return mv_data["embed_url"] if mv_data else None
 
 POPULAR_ARTISTS = [
     "Taylor Swift",
@@ -320,9 +297,6 @@ def artist_page():
         artist_bio = get_artist_bio(artist_name)
         concert_data = get_upcoming_concerts(artist.get("name") or artist_name)
         concert_events = concert_data.get("events", [])
-        mv_data = build_artist_mv_data(artist.get("name") or artist_name)
-        mv_embed_url = mv_data.get("embed_url") if mv_data else None
-        mv_poster_url = mv_data.get("poster_url") if mv_data else None
         style_insights = build_style_insights(artist_tags, similar_artists)
 
         album_years = []
@@ -368,8 +342,6 @@ def artist_page():
             artist_tags=artist_tags,
             artist_bio=artist_bio,
             style_insights=style_insights,
-            mv_embed_url=mv_embed_url,
-            mv_poster_url=mv_poster_url,
             concert_events=concert_events,
             concert_message=concert_data.get("message"),
             chart_labels=chart_labels,

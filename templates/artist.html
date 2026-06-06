@@ -21,42 +21,19 @@
                 </div>
             {% else %}
                 <div class="artist-motion-backdrop" aria-hidden="true">
-                    {% if mv_embed_url %}
-                        {% if mv_poster_url %}
-                            <img class="mv-poster" src="{{ mv_poster_url }}" alt="">
-                        {% endif %}
-                        <iframe
-                            src="{{ mv_embed_url }}"
-                            title="{{ artist.name }} MV background"
-                            allow="autoplay; encrypted-media"
-                            loading="lazy">
-                        </iframe>
-                    {% elif artist.image %}
-                        <img src="{{ artist.image }}" alt="">
+                    {% if artist.image %}
+                        <img class="artist-backdrop-image" src="{{ artist.image }}" alt="" crossorigin="anonymous">
                     {% endif %}
                     <div class="motion-light motion-light-one"></div>
                     <div class="motion-light motion-light-two"></div>
+                    <div class="motion-light motion-light-three"></div>
                     <div class="motion-scanline"></div>
                 </div>
-
-                {% if mv_embed_url %}
-                    <div class="artist-mv-stage" aria-hidden="true">
-                        {% if mv_poster_url %}
-                            <img class="mv-poster" src="{{ mv_poster_url }}" alt="">
-                        {% endif %}
-                        <iframe
-                            src="{{ mv_embed_url }}"
-                            title="{{ artist.name }} MV preview"
-                            allow="autoplay; encrypted-media"
-                            loading="lazy">
-                        </iframe>
-                    </div>
-                {% endif %}
 
                 <div class="artist-hero">
                     <div class="artist-image-wrap">
                         {% if artist.image %}
-                            <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
+                            <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image" crossorigin="anonymous">
                         {% endif %}
                     </div>
 
@@ -411,6 +388,67 @@
                     });
                 </script>
                 {% endif %}
+                <script>
+                    (() => {
+                        const pageCard = document.querySelector('.artist-page-card');
+                        const artistImage = document.querySelector('.artist-image');
+                        if (!pageCard || !artistImage || !artistImage.src) {
+                            return;
+                        }
+
+                        const colorImage = new Image();
+                        colorImage.crossOrigin = 'anonymous';
+                        colorImage.src = artistImage.currentSrc || artistImage.src;
+
+                        colorImage.onload = () => {
+                            try {
+                                const canvas = document.createElement('canvas');
+                                const size = 64;
+                                canvas.width = size;
+                                canvas.height = size;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(colorImage, 0, 0, size, size);
+                                const pixels = ctx.getImageData(0, 0, size, size).data;
+                                const buckets = new Map();
+
+                                for (let i = 0; i < pixels.length; i += 16) {
+                                    const r = pixels[i];
+                                    const g = pixels[i + 1];
+                                    const b = pixels[i + 2];
+                                    const max = Math.max(r, g, b);
+                                    const min = Math.min(r, g, b);
+                                    const saturation = max - min;
+                                    const brightness = (r + g + b) / 3;
+
+                                    if (brightness < 34 || brightness > 238 || saturation < 16) {
+                                        continue;
+                                    }
+
+                                    const key = [
+                                        Math.round(r / 28) * 28,
+                                        Math.round(g / 28) * 28,
+                                        Math.round(b / 28) * 28
+                                    ].join(',');
+                                    buckets.set(key, (buckets.get(key) || 0) + 1);
+                                }
+
+                                const colors = [...buckets.entries()]
+                                    .sort((a, b) => b[1] - a[1])
+                                    .slice(0, 3)
+                                    .map(([key]) => `rgb(${key})`);
+
+                                if (colors.length >= 3) {
+                                    pageCard.style.setProperty('--artist-color-1', colors[0]);
+                                    pageCard.style.setProperty('--artist-color-2', colors[1]);
+                                    pageCard.style.setProperty('--artist-color-3', colors[2]);
+                                    pageCard.classList.add('has-sampled-colors');
+                                }
+                            } catch (error) {
+                                console.warn('Artist image color sampling failed:', error);
+                            }
+                        };
+                    })();
+                </script>
             {% endif %}
         </div>
     </div>
