@@ -22,6 +22,9 @@
             {% else %}
                 <div class="artist-motion-backdrop" aria-hidden="true">
                     {% if mv_embed_url %}
+                        {% if mv_poster_url %}
+                            <img class="mv-poster" src="{{ mv_poster_url }}" alt="">
+                        {% endif %}
                         <iframe
                             src="{{ mv_embed_url }}"
                             title="{{ artist.name }} MV background"
@@ -35,6 +38,20 @@
                     <div class="motion-light motion-light-two"></div>
                     <div class="motion-scanline"></div>
                 </div>
+
+                {% if mv_embed_url %}
+                    <div class="artist-mv-stage" aria-hidden="true">
+                        {% if mv_poster_url %}
+                            <img class="mv-poster" src="{{ mv_poster_url }}" alt="">
+                        {% endif %}
+                        <iframe
+                            src="{{ mv_embed_url }}"
+                            title="{{ artist.name }} MV preview"
+                            allow="autoplay; encrypted-media"
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                {% endif %}
 
                 <div class="artist-hero">
                     <div class="artist-image-wrap">

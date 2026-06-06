@@ -208,14 +208,14 @@ a:hover {
 
 .artist-motion-backdrop::after {
     background:
-        linear-gradient(180deg, rgba(10, 10, 10, 0.28), rgba(10, 10, 10, 0.78)),
-        radial-gradient(circle at 50% 22%, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.50) 64%);
+        linear-gradient(180deg, rgba(10, 10, 10, 0.18), rgba(10, 10, 10, 0.72)),
+        radial-gradient(circle at 50% 22%, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.44) 64%);
     content: "";
     inset: 0;
     position: absolute;
 }
 
-.artist-motion-backdrop img {
+.artist-motion-backdrop img:not(.mv-poster) {
     animation: motionBackdropDrift 18s ease-in-out infinite alternate;
     filter: grayscale(1) contrast(1.16) brightness(0.82) blur(14px);
     height: 120%;
@@ -228,6 +228,16 @@ a:hover {
     width: 120%;
 }
 
+.mv-poster {
+    filter: grayscale(1) contrast(1.18) brightness(0.82);
+    height: 100%;
+    inset: 0;
+    object-fit: cover;
+    opacity: 0.72;
+    position: absolute;
+    width: 100%;
+}
+
 .artist-motion-backdrop iframe {
     border: 0;
     filter: grayscale(1) contrast(1.18) brightness(0.74);
@@ -235,11 +245,46 @@ a:hover {
     left: 50%;
     min-height: 100%;
     min-width: 177.78vh;
-    opacity: 0.46;
+    opacity: 0.62;
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%) scale(1.08);
     width: 125%;
+}
+
+.artist-mv-stage {
+    aspect-ratio: 16 / 7.6;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 22px;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 24px 52px rgba(0, 0, 0, 0.34);
+    margin-bottom: -118px;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.artist-mv-stage::after {
+    background:
+        linear-gradient(180deg, rgba(10, 10, 10, 0.10), rgba(10, 10, 10, 0.78)),
+        radial-gradient(circle at 70% 20%, transparent, rgba(0, 0, 0, 0.48) 72%);
+    content: "";
+    inset: 0;
+    position: absolute;
+}
+
+.artist-mv-stage iframe {
+    border: 0;
+    filter: grayscale(1) contrast(1.12) brightness(0.86);
+    height: 120%;
+    left: 50%;
+    min-height: 100%;
+    min-width: 177.78vh;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(1.04);
+    width: 120%;
+    z-index: 1;
 }
 
 .motion-light {
@@ -301,8 +346,9 @@ a:hover {
 .artist-hero {
     align-items: stretch;
     background:
-        radial-gradient(circle at 92% 8%, rgba(255, 139, 64, 0.28), transparent 34%),
-        linear-gradient(135deg, rgba(30, 215, 96, 0.16) 0%, rgba(255, 255, 255, 0.07) 54%, rgba(255, 255, 255, 0.04) 100%);
+        radial-gradient(circle at 92% 8%, rgba(255, 255, 255, 0.16), transparent 34%),
+        linear-gradient(135deg, rgba(10, 10, 10, 0.74) 0%, rgba(22, 22, 22, 0.82) 54%, rgba(38, 38, 38, 0.68) 100%);
+    backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 22px;
     display: grid;
@@ -929,6 +975,11 @@ a:hover {
     .artist-content-grid,
     .concert-layout {
         grid-template-columns: 1fr;
+    }
+
+    .artist-mv-stage {
+        aspect-ratio: 16 / 9;
+        margin-bottom: -72px;
     }
 
     .concert-list {
