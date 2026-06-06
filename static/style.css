@@ -209,10 +209,26 @@ a:hover {
     z-index: 0;
 }
 
+.artist-motion-backdrop::before {
+    animation: colorMistFlow 24s ease-in-out infinite alternate;
+    background:
+        radial-gradient(circle at 18% 22%, var(--artist-color-1), transparent 34%),
+        radial-gradient(circle at 78% 16%, var(--artist-color-2), transparent 36%),
+        radial-gradient(circle at 50% 76%, var(--artist-color-3), transparent 38%),
+        conic-gradient(from 120deg at 50% 50%, var(--artist-color-1), var(--artist-color-2), var(--artist-color-3), var(--artist-color-1));
+    content: "";
+    filter: blur(58px) saturate(1.18);
+    inset: -18%;
+    opacity: 0.56;
+    position: absolute;
+    transform: scale(1.12);
+}
+
 .artist-motion-backdrop::after {
     background:
-        linear-gradient(180deg, rgba(10, 10, 10, 0.20), rgba(10, 10, 10, 0.72)),
-        radial-gradient(circle at 50% 22%, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.50) 64%);
+        linear-gradient(180deg, rgba(10, 10, 10, 0.14), rgba(10, 10, 10, 0.72)),
+        radial-gradient(circle at 50% 22%, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.50) 64%),
+        repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.030) 0 1px, transparent 1px 22px);
     content: "";
     inset: 0;
     position: absolute;
@@ -220,11 +236,12 @@ a:hover {
 
 .artist-backdrop-image {
     animation: motionBackdropDrift 18s ease-in-out infinite alternate;
-    filter: grayscale(1) contrast(1.16) brightness(0.82) blur(14px);
+    filter: contrast(1.08) brightness(0.72) blur(28px) saturate(1.18);
     height: 120%;
     left: -10%;
     object-fit: cover;
-    opacity: 0.58;
+    mix-blend-mode: screen;
+    opacity: 0.24;
     position: absolute;
     top: -10%;
     transform: scale(1.08);
@@ -233,41 +250,45 @@ a:hover {
 
 .motion-light {
     border-radius: 999px;
-    filter: blur(54px);
-    opacity: 0.48;
+    filter: blur(72px);
+    mix-blend-mode: screen;
+    opacity: 0.62;
     position: absolute;
 }
 
 .motion-light-one {
-    animation: motionLightOne 12s ease-in-out infinite alternate;
-    background: var(--artist-color-1);
-    height: 300px;
-    right: 6%;
-    top: 8%;
-    width: 460px;
+    animation: mistBlobOne 19s ease-in-out infinite alternate;
+    background:
+        radial-gradient(circle, var(--artist-color-1), transparent 68%);
+    height: 460px;
+    right: -6%;
+    top: 0;
+    width: 620px;
 }
 
 .motion-light-two {
-    animation: motionLightTwo 15s ease-in-out infinite alternate;
-    background: var(--artist-color-2);
-    bottom: 12%;
-    height: 320px;
-    left: 5%;
-    width: 420px;
+    animation: mistBlobTwo 23s ease-in-out infinite alternate;
+    background:
+        radial-gradient(circle, var(--artist-color-2), transparent 70%);
+    bottom: 2%;
+    height: 520px;
+    left: -8%;
+    width: 600px;
 }
 
 .motion-light-three {
-    animation: motionLightThree 18s ease-in-out infinite alternate;
-    background: var(--artist-color-3);
-    height: 260px;
-    left: 36%;
-    top: 34%;
-    width: 420px;
+    animation: mistBlobThree 27s ease-in-out infinite alternate;
+    background:
+        radial-gradient(circle, var(--artist-color-3), transparent 70%);
+    height: 500px;
+    left: 32%;
+    top: 22%;
+    width: 680px;
 }
 
 .motion-scanline {
-    animation: scanlineMove 8s linear infinite;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+    animation: scanlineMove 13s linear infinite;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
     height: 100%;
     left: -42%;
     position: absolute;
@@ -281,19 +302,25 @@ a:hover {
     to { transform: scale(1.16) translate3d(2%, 2%, 0); }
 }
 
-@keyframes motionLightOne {
-    from { transform: translate3d(0, 0, 0) scale(1); }
-    to { transform: translate3d(-80px, 48px, 0) scale(1.12); }
+@keyframes colorMistFlow {
+    0% { transform: translate3d(-2%, -1%, 0) rotate(0deg) scale(1.08); }
+    50% { transform: translate3d(2%, 2%, 0) rotate(7deg) scale(1.18); }
+    100% { transform: translate3d(-1%, 3%, 0) rotate(-5deg) scale(1.14); }
 }
 
-@keyframes motionLightTwo {
+@keyframes mistBlobOne {
     from { transform: translate3d(0, 0, 0) scale(1); }
-    to { transform: translate3d(96px, -40px, 0) scale(1.18); }
+    to { transform: translate3d(-130px, 82px, 0) scale(1.26); }
 }
 
-@keyframes motionLightThree {
-    from { transform: translate3d(-20px, 20px, 0) scale(1); }
-    to { transform: translate3d(80px, -70px, 0) scale(1.22); }
+@keyframes mistBlobTwo {
+    from { transform: translate3d(0, 0, 0) scale(1.05); }
+    to { transform: translate3d(160px, -68px, 0) scale(1.22); }
+}
+
+@keyframes mistBlobThree {
+    from { transform: translate3d(-48px, 40px, 0) scale(1); }
+    to { transform: translate3d(92px, -92px, 0) scale(1.28); }
 }
 
 @keyframes scanlineMove {
