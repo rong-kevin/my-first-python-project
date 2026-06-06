@@ -33,6 +33,31 @@
                 {% endfor %}
             </div>
 
+
+            <section class="discover-ranking-overview" aria-label="各分類歌手榜單">
+                <div class="section-title-row discover-ranking-heading">
+                    <div>
+                        <p class="eyebrow">Artist Ranking</p>
+                        <h2>各風格歌手榜單</h2>
+                    </div>
+                </div>
+                <div class="discover-ranking-grid">
+                    {% for filter_key, filter in filters.items() %}
+                        <article class="discover-ranking-card {% if selected_filter == filter_key %}active{% endif %}">
+                            <a href="/discover?type={{ filter_key }}" class="ranking-card-title discover-loading-link">
+                                {{ filter.label }}
+                            </a>
+                            <ol class="artist-ranking-list compact">
+                                {% for artist in filter.artists[:5] %}
+                                    <li>
+                                        <a href="/artist?name={{ artist }}" class="artist-loading-link">{{ artist }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ol>
+                        </article>
+                    {% endfor %}
+                </div>
+            </section>
             <div class="loading-panel mood-loading-panel" id="loadingPanel">
                 <div class="loading-disc"></div>
                 <div>
@@ -69,6 +94,18 @@
                             </a>
                         {% endfor %}
                     </div>
+
+                    <h3>歌手榜單</h3>
+                    <ol class="artist-ranking-list selected">
+                        {% for artist in selected_ranking %}
+                            <li>
+                                <a href="/artist?name={{ artist }}" class="artist-loading-link">
+                                    <strong>{{ artist }}</strong>
+                                    <span>第 {{ loop.index }} 名・查看歌手資料</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ol>
                 </div>
             {% else %}
                 <div class="section-card mood-empty discover-empty">

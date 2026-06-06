@@ -263,12 +263,14 @@ def mood_page():
 def discover_page():
     selected_filter = request.args.get("type", "").strip()
     selected_recommendation = build_discover_recommendation(selected_filter)
+    selected_ranking = DISCOVER_FILTERS.get(selected_filter, {}).get("artists", [])
 
     return render_template(
         "discover.html",
         filters=DISCOVER_FILTERS,
         selected_filter=selected_filter,
-        selected_recommendation=selected_recommendation
+        selected_recommendation=selected_recommendation,
+        selected_ranking=selected_ranking
     )
 
 
