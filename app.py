@@ -6,7 +6,8 @@ from flask import Flask, render_template, request, redirect, session, url_for
 from services.spotify_api import (
     search_artist,
     get_artist_albums,
-    fallback_artist_preview
+    fallback_artist_preview,
+    get_artist_preview
 )
 from services.lastfm_api import get_similar_artists, get_artist_tags
 from services.wiki_scraper import get_artist_bio
@@ -294,8 +295,8 @@ def pick_hero_artists(count=6):
 @app.route("/")
 def home():
     hero_artist_names = pick_hero_artists()
-    hero_artist_cards = [fallback_artist_preview(name) for name in hero_artist_names]
-    popular_artist_cards = [fallback_artist_preview(name) for name in POPULAR_ARTISTS]
+    hero_artist_cards = [get_artist_preview(name) for name in hero_artist_names]
+    popular_artist_cards = [get_artist_preview(name) for name in POPULAR_ARTISTS]
     return render_template(
         "index.html",
         popular_artists=POPULAR_ARTISTS,
