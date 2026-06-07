@@ -10,7 +10,8 @@ MeloMap. 是一張連結歌手、曲風與演唱會的音樂地圖。使用者�
 
 ## 線上網站
 
-- Render 網址：待部署後補上
+- Render 正式網站：https://melomap-3bgj.onrender.com/
+- 部署狀態：已成功上線（Render）
 - 使用者回饋表單：待網站上線後補上
 
 ## 主要功能
@@ -148,7 +149,11 @@ Push 後在 GitHub 建立 Pull Request，經檢查後再合併到 `main`。
 
 ## Render 上線設定
 
-上線時將 GitHub repository 連接到 Render，並在 Render Dashboard 設定與 `.env` 相同的環境變數。不要把真實 API key 寫進 repository。
+MeloMap. 已透過 Render 部署並公開上線：
+
+https://melomap-3bgj.onrender.com/
+
+Render 已連接 GitHub repository 的 `main` branch；合併新版本到 `main` 後會自動重新部署。環境變數設定於 Render Dashboard，不會把真實 API key 寫進 repository。
 
 本專案已提供 `render.yaml`，Render 會使用：
 
@@ -158,13 +163,16 @@ Start Command: gunicorn app:app --bind 0.0.0.0:$PORT
 Health Check: /health
 ```
 
-正式部署前需確認：
+目前部署內容包括：
 
-- Production 啟動指令
-- 四組 API 環境變數
+- Gunicorn Production 啟動指令
+- `/health` 健康檢查路徑
+- Spotify、Last.fm 與 Ticketmaster API 環境變數
 - 網站主要頁面與手機版
 - Spotify 備援模式
-- Ticketmaster 演唱會與地圖
+- Ticketmaster 演唱會與 Leaflet 地圖
+
+Render 免費方案閒置一段時間後會暫停服務，下一位使用者首次開啟時可能需要等待約 50 秒。
 
 ## 使用者回饋
 
