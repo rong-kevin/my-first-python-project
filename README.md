@@ -12,7 +12,7 @@ MeloMap. 是一張連結歌手、曲風與演唱會的音樂地圖。使用者�
 
 - Render 正式網站：https://melomap-3bgj.onrender.com/
 - 部署狀態：已成功上線（Render）
-- 使用者回饋表單：待網站上線後補上
+- 使用者回饋表單：https://docs.google.com/forms/d/e/1FAIpQLSdgjbbTj08QBMTBqTOoAo8aj1zqwEx0kb8taY2cgE7iunwCFw/viewform
 
 ## 主要功能
 
