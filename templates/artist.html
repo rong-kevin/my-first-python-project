@@ -51,13 +51,25 @@
                             {% endif %}
                         </div>
 
+                        <div class="data-status-row">
+                            <span class="{{ 'warning' if spotify_unavailable else '' }}">Spotify：{{ data_status.spotify }}</span>
+                            <span>Last.fm：{{ data_status.lastfm }}</span>
+                            <span>Wikipedia：{{ data_status.wikipedia }}</span>
+                        </div>
+
+                        {% if spotify_unavailable %}
+                            <div class="backup-notice">
+                                Spotify 目前暫時限制請求，頁面已切換成備用資料模式；Last.fm 與 Wikipedia 可用時仍會繼續顯示。
+                            </div>
+                        {% endif %}
+
                         <div class="artist-actions">
                             {% if artist.spotify_url and artist.spotify_url != '#' %}
                                 <a href="{{ artist.spotify_url }}" target="_blank" rel="noopener noreferrer" class="spotify-link">
                                     在 Spotify 開啟
                                 </a>
                             {% else %}
-                                <span class="spotify-link disabled">使用 Last.fm 備援資料</span>
+                                <span class="spotify-link disabled">Spotify 暫時無法連線</span>
                             {% endif %}
                         </div>
 
@@ -125,7 +137,12 @@
                 <div class="artist-content-grid">
                     <div class="section-card spotify-section">
                         <h2>Spotify 播放器</h2>
-                        {% if artist.embed_url and artist.embed_url != '#' %}
+                        {% if spotify_unavailable or not artist.embed_url or artist.embed_url == '#' %}
+                            <div class="spotify-unavailable">
+                                <strong>Spotify 目前無法提供播放器</strong>
+                                <p>目前已改用 Last.fm 與 Wikipedia 顯示歌手資料；等 Spotify API 恢復後會自動回到播放器。</p>
+                            </div>
+                        {% else %}
                             <iframe
                                 src="{{ artist.embed_url }}"
                                 class="spotify-embed"
@@ -133,11 +150,6 @@
                                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                                 loading="lazy">
                             </iframe>
-                        {% else %}
-                            <div class="spotify-unavailable">
-                                <strong>Spotify 目前無法提供播放器</strong>
-                                <p>已改用 Last.fm 與 Wikipedia 顯示歌手資料，專輯清單也會使用 Last.fm 熱門專輯。</p>
-                            </div>
                         {% endif %}
                     </div>
 
@@ -231,6 +243,14 @@
                     <ul class="album-list" id="albumList">
                         {% for album in albums %}
                             <li class="album-row" data-type="{{ album.album_type }}">
+                                <div class="album-cover">
+                                    {% if album.image %}
+                                        <img src="{{ album.image }}" alt="{{ album.name }}">
+                                    {% else %}
+                                        <span>{{ album.name[:1] }}</span>
+                                    {% endif %}
+                                </div>
+
                                 <div class="album-main">
                                     {% if album.spotify_url and album.spotify_url != '#' %}
                                         <a href="{{ album.spotify_url }}" target="_blank" rel="noopener noreferrer" class="album-title">{{ album.name }}</a>

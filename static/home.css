@@ -98,6 +98,11 @@
     max-width: 860px;
 }
 
+.keep-together {
+    display: inline-block;
+    white-space: nowrap;
+}
+
 .hero-subtitle {
     color: rgba(255, 255, 255, 0.74);
     font-size: 21px;

@@ -3,13 +3,50 @@ import random
 from collections import Counter
 
 from flask import Flask, render_template, request, redirect, session, url_for
-from services.spotify_api import search_artist, get_artist_albums, get_artist_previews
+from services.spotify_api import (
+    search_artist,
+    get_artist_albums,
+    fallback_artist_preview,
+    get_artist_preview
+)
 from services.lastfm_api import get_similar_artists, get_artist_tags
 from services.wiki_scraper import get_artist_bio
 from services.concert_api import get_upcoming_concerts
 
+
+def build_backup_artist(artist_name):
+    return {
+        "name": artist_name,
+        "followers": "N/A",
+        "genres": [],
+        "image": None,
+        "spotify_url": "#",
+        "embed_url": "#"
+    }
+
+
+def build_backup_albums(artist_name):
+    return [
+        {
+            "name": f"{artist_name} 代表作品",
+            "release_date": "資料備援模式",
+            "album_type": "album",
+            "image": None,
+            "spotify_url": "#"
+        },
+        {
+            "name": f"{artist_name} 熱門單曲",
+            "release_date": "資料備援模式",
+            "album_type": "single",
+            "image": None,
+            "spotify_url": "#"
+        }
+    ]
+
+
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "artist-explorer-dev-secret")
+SPOTIFY_PAUSED = os.getenv("SPOTIFY_PAUSED", "").lower() in ("1", "true", "yes", "on")
 
 POPULAR_ARTISTS = [
     "Taylor Swift",
@@ -230,12 +267,41 @@ def build_discover_recommendation(filter_key):
     return recommendation
 
 
+def pick_hero_artists(count=6):
+    pick_count = min(count, len(POPULAR_ARTISTS))
+    used_artists = set(session.get("used_hero_artists", []))
+    last_artists = set(session.get("last_hero_artists", []))
+    available_artists = [
+        artist for artist in POPULAR_ARTISTS
+        if artist not in used_artists
+    ]
+
+    if len(available_artists) < pick_count:
+        used_artists = set()
+        available_artists = [
+            artist for artist in POPULAR_ARTISTS
+            if artist not in last_artists
+        ]
+
+    if len(available_artists) < pick_count:
+        available_artists = list(POPULAR_ARTISTS)
+
+    selected_artists = random.sample(available_artists, pick_count)
+    used_artists.update(selected_artists)
+    session["used_hero_artists"] = list(used_artists)
+    session["last_hero_artists"] = selected_artists
+    return selected_artists
+
+
 @app.route("/")
 def home():
-    popular_artist_cards = get_artist_previews(POPULAR_ARTISTS)
+    hero_artist_names = pick_hero_artists()
+    hero_artist_cards = [get_artist_preview(name) for name in hero_artist_names]
+    popular_artist_cards = [get_artist_preview(name) for name in POPULAR_ARTISTS]
     return render_template(
         "index.html",
         popular_artists=POPULAR_ARTISTS,
+        hero_artist_cards=hero_artist_cards,
         popular_artist_cards=popular_artist_cards
     )
 
@@ -285,18 +351,49 @@ def artist_page():
         )
 
     try:
-        artist = search_artist(artist_name)
+        spotify_unavailable = False
+        data_status = {
+            "spotify": "已取得",
+            "lastfm": "等待中",
+            "wikipedia": "等待中"
+        }
+
+        if SPOTIFY_PAUSED:
+            artist = build_backup_artist(artist_name)
+            spotify_unavailable = True
+            data_status["spotify"] = "已暫停 24 小時，使用備用資料"
+        else:
+            try:
+                artist = search_artist(artist_name)
+            except Exception:
+                artist = build_backup_artist(artist_name)
+                spotify_unavailable = True
+                data_status["spotify"] = "限流中，已切換備用資料"
+            else:
+                if artist.get("spotify_url") == "#" or artist.get("embed_url") == "#":
+                    spotify_unavailable = True
+                    data_status["spotify"] = "未取得，已切換備用資料"
 
         if not artist:
-            return render_template(
-                "artist.html",
-                error="找不到這位歌手"
-            )
+            artist = build_backup_artist(artist_name)
+            spotify_unavailable = True
+            data_status["spotify"] = "查無資料，已切換備用資料"
 
-        albums = get_artist_albums(artist_name)
+        try:
+            albums = [] if spotify_unavailable else get_artist_albums(artist_name)
+        except Exception:
+            albums = []
+            spotify_unavailable = True
+            data_status["spotify"] = "限流中，專輯暫時無法取得"
+
+        if spotify_unavailable and not albums:
+            albums = build_backup_albums(artist["name"])
+
         similar_artists = get_similar_artists(artist_name)
         artist_tags = get_artist_tags(artist_name)
         artist_bio = get_artist_bio(artist_name)
+        data_status["lastfm"] = "已取得" if artist_tags or similar_artists else "暫時無資料"
+        data_status["wikipedia"] = "已取得" if artist_bio else "暫時無資料"
         concert_data = get_upcoming_concerts(artist.get("name") or artist_name)
         concert_events = concert_data.get("events", [])
         style_insights = build_style_insights(artist_tags, similar_artists)
@@ -350,6 +447,8 @@ def artist_page():
             album_chart_values=album_chart_values,
             single_chart_values=single_chart_values,
             chart_summary=chart_summary,
+            spotify_unavailable=spotify_unavailable,
+            data_status=data_status,
             error=None
         )
 

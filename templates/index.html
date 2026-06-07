@@ -22,7 +22,7 @@
         <section class="music-hero" id="search">
             <div class="hero-copy">
                 <p class="hero-kicker">Music discovery for every mood</p>
-                <h1>探索下一個會喜歡的聲音</h1>
+                <h1>探索下一個會喜歡的<span class="keep-together">聲音</span></h1>
                 <p class="hero-subtitle">
                     搜尋歌手、查看作品年份、聽 Spotify 播放器，也能從情境與曲風開始找到新的音樂人。
                 </p>
@@ -54,7 +54,7 @@
 
             <div class="hero-visual" aria-hidden="true">
                 <div class="album-wall">
-                    {% for card in popular_artist_cards[:6] %}
+                    {% for card in hero_artist_cards %}
                         <div class="album-tile tile-{{ loop.index }}">
                             {% if card.image %}
                                 <img src="{{ card.image }}" alt="">
@@ -114,6 +114,7 @@
                 {% endfor %}
             </div>
         </section>
+
     </main>
 
     <script>
@@ -132,6 +133,7 @@
         artistLinks.forEach((link) => {
             link.addEventListener('click', showLoading);
         });
+
     </script>
 </body>
 </html>
