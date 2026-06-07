@@ -66,6 +66,7 @@ my-first-python-project/
 ├── run.py
 ├── visualize_artist.py
 ├── requirements.txt
+├── render.yaml
 ├── README.md
 ├── .env.example
 ├── services/
@@ -148,6 +149,14 @@ Push 後在 GitHub 建立 Pull Request，經檢查後再合併到 `main`。
 ## Render 上線設定
 
 上線時將 GitHub repository 連接到 Render，並在 Render Dashboard 設定與 `.env` 相同的環境變數。不要把真實 API key 寫進 repository。
+
+本專案已提供 `render.yaml`，Render 會使用：
+
+```text
+Build Command: pip install -r requirements.txt
+Start Command: gunicorn app:app --bind 0.0.0.0:$PORT
+Health Check: /health
+```
 
 正式部署前需確認：
 
