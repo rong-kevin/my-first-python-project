@@ -49,7 +49,7 @@ a:hover {
 }
 
 .page-card {
-    background: rgba(18, 18, 18, 0.94);
+    background: rgba(18, 18, 18, 0.88);
     border: 1px solid rgba(255, 255, 255, 0.10);
     border-radius: 24px;
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
@@ -58,7 +58,8 @@ a:hover {
 }
 
 .section-card {
-    background: rgba(255, 255, 255, 0.07);
+    background: rgba(18, 18, 18, 0.74);
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.10);
     border-radius: 20px;
     margin-top: 28px;
@@ -189,13 +190,150 @@ a:hover {
 
 .artist-page-card {
     overflow: hidden;
+    position: relative;
+    --artist-color-1: rgba(30, 215, 96, 0.44);
+    --artist-color-2: rgba(255, 139, 64, 0.34);
+    --artist-color-3: rgba(255, 255, 255, 0.24);
+}
+
+.artist-page-card > *:not(.artist-motion-backdrop) {
+    position: relative;
+    z-index: 1;
+}
+
+.artist-motion-backdrop {
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+}
+
+.artist-motion-backdrop::before {
+    animation: colorMistFlow 24s ease-in-out infinite alternate;
+    background:
+        radial-gradient(circle at 18% 22%, var(--artist-color-1), transparent 34%),
+        radial-gradient(circle at 78% 16%, var(--artist-color-2), transparent 36%),
+        radial-gradient(circle at 50% 76%, var(--artist-color-3), transparent 38%),
+        conic-gradient(from 120deg at 50% 50%, var(--artist-color-1), var(--artist-color-2), var(--artist-color-3), var(--artist-color-1));
+    content: "";
+    filter: blur(58px) saturate(1.18);
+    inset: -18%;
+    opacity: 0.56;
+    position: absolute;
+    transform: scale(1.12);
+}
+
+.artist-motion-backdrop::after {
+    background:
+        linear-gradient(180deg, rgba(10, 10, 10, 0.14), rgba(10, 10, 10, 0.72)),
+        radial-gradient(circle at 50% 22%, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.50) 64%),
+        repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.030) 0 1px, transparent 1px 22px);
+    content: "";
+    inset: 0;
+    position: absolute;
+}
+
+.artist-backdrop-image {
+    animation: motionBackdropDrift 18s ease-in-out infinite alternate;
+    filter: contrast(1.08) brightness(0.72) blur(28px) saturate(1.18);
+    height: 120%;
+    left: -10%;
+    object-fit: cover;
+    mix-blend-mode: screen;
+    opacity: 0.24;
+    position: absolute;
+    top: -10%;
+    transform: scale(1.08);
+    width: 120%;
+}
+
+.motion-light {
+    border-radius: 999px;
+    filter: blur(72px);
+    mix-blend-mode: screen;
+    opacity: 0.62;
+    position: absolute;
+}
+
+.motion-light-one {
+    animation: mistBlobOne 19s ease-in-out infinite alternate;
+    background:
+        radial-gradient(circle, var(--artist-color-1), transparent 68%);
+    height: 460px;
+    right: -6%;
+    top: 0;
+    width: 620px;
+}
+
+.motion-light-two {
+    animation: mistBlobTwo 23s ease-in-out infinite alternate;
+    background:
+        radial-gradient(circle, var(--artist-color-2), transparent 70%);
+    bottom: 2%;
+    height: 520px;
+    left: -8%;
+    width: 600px;
+}
+
+.motion-light-three {
+    animation: mistBlobThree 27s ease-in-out infinite alternate;
+    background:
+        radial-gradient(circle, var(--artist-color-3), transparent 70%);
+    height: 500px;
+    left: 32%;
+    top: 22%;
+    width: 680px;
+}
+
+.motion-scanline {
+    animation: scanlineMove 13s linear infinite;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    height: 100%;
+    left: -42%;
+    position: absolute;
+    top: 0;
+    transform: skewX(-18deg);
+    width: 34%;
+}
+
+@keyframes motionBackdropDrift {
+    from { transform: scale(1.08) translate3d(-1%, -1%, 0); }
+    to { transform: scale(1.16) translate3d(2%, 2%, 0); }
+}
+
+@keyframes colorMistFlow {
+    0% { transform: translate3d(-2%, -1%, 0) rotate(0deg) scale(1.08); }
+    50% { transform: translate3d(2%, 2%, 0) rotate(7deg) scale(1.18); }
+    100% { transform: translate3d(-1%, 3%, 0) rotate(-5deg) scale(1.14); }
+}
+
+@keyframes mistBlobOne {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(-130px, 82px, 0) scale(1.26); }
+}
+
+@keyframes mistBlobTwo {
+    from { transform: translate3d(0, 0, 0) scale(1.05); }
+    to { transform: translate3d(160px, -68px, 0) scale(1.22); }
+}
+
+@keyframes mistBlobThree {
+    from { transform: translate3d(-48px, 40px, 0) scale(1); }
+    to { transform: translate3d(92px, -92px, 0) scale(1.28); }
+}
+
+@keyframes scanlineMove {
+    from { left: -42%; }
+    to { left: 112%; }
 }
 
 .artist-hero {
     align-items: stretch;
     background:
-        radial-gradient(circle at 92% 8%, rgba(255, 139, 64, 0.28), transparent 34%),
-        linear-gradient(135deg, rgba(30, 215, 96, 0.16) 0%, rgba(255, 255, 255, 0.07) 54%, rgba(255, 255, 255, 0.04) 100%);
+        radial-gradient(circle at 92% 8%, rgba(255, 255, 255, 0.16), transparent 34%),
+        linear-gradient(135deg, rgba(10, 10, 10, 0.74) 0%, rgba(22, 22, 22, 0.82) 54%, rgba(38, 38, 38, 0.68) 100%);
+    backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 22px;
     display: grid;
@@ -401,12 +539,136 @@ a:hover {
     align-items: center;
     display: flex;
     min-height: 352px;
+.spotify-link.disabled {
+    cursor: default;
+    opacity: 0.82;
+}
+
+.spotify-unavailable {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    min-height: 352px;
+    padding: 28px;
+    text-align: center;
+}
+
+.spotify-unavailable strong {
+    color: #fff;
+    font-size: 20px;
+}
+
+.spotify-unavailable p {
+    color: rgba(255, 255, 255, 0.68);
+    line-height: 1.7;
+    margin: 0;
+    max-width: 420px;
+}
+
+.spotify-unavailable.compact {
+    min-height: 180px;
 }
 
 .chart-section {
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.055)),
         #151515;
+}
+
+.concerts-section {
+    background:
+        radial-gradient(circle at 92% 0%, rgba(30, 215, 96, 0.13), transparent 30%),
+        rgba(255, 255, 255, 0.07);
+}
+
+.concert-layout {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: minmax(320px, 1.25fr) minmax(260px, 0.75fr);
+}
+
+.concert-map {
+    background: #d8d8d8;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 18px;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 18px 36px rgba(0, 0, 0, 0.32);
+    min-height: 360px;
+    overflow: hidden;
+}
+
+.concert-list {
+    display: grid;
+    gap: 10px;
+    max-height: 360px;
+    overflow: auto;
+    padding-right: 4px;
+}
+
+.concert-card {
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    color: #fff;
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+    transition: 0.2s ease;
+}
+
+.concert-card:hover {
+    background: rgba(30, 215, 96, 0.13);
+    border-color: rgba(30, 215, 96, 0.38);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.concert-card strong {
+    color: #b8f7c8;
+    font-size: 16px;
+}
+
+.concert-card span {
+    color: #fff;
+    font-weight: 900;
+}
+
+.concert-card small {
+    color: rgba(255, 255, 255, 0.64);
+    line-height: 1.5;
+}
+
+.leaflet-container {
+    background: #101010;
+    font-family: Arial, "Microsoft JhengHei", sans-serif;
+}
+
+.concert-map .leaflet-tile {
+    filter: grayscale(1) contrast(1.08) brightness(0.96);
+}
+
+.concert-map .leaflet-marker-icon {
+    filter: grayscale(1) contrast(1.4) brightness(0.82) drop-shadow(0 0 8px rgba(0, 0, 0, 0.48));
+}
+
+.concert-map .leaflet-control-attribution,
+.concert-map .leaflet-control-zoom a {
+    background: rgba(245, 245, 245, 0.88);
+    border-color: rgba(0, 0, 0, 0.16);
+    color: rgba(0, 0, 0, 0.76);
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    background: #0d0d0d;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #fff;
 }
 
 .chart-note {
@@ -747,6 +1009,103 @@ a:hover {
     color: #140a03;
 }
 
+
+.discover-ranking-overview {
+    margin-top: 36px;
+}
+
+.discover-ranking-heading {
+    margin-bottom: 18px;
+}
+
+.discover-ranking-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.discover-ranking-card {
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.04));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    padding: 18px;
+    transition: 0.2s ease;
+}
+
+.discover-ranking-card.active,
+.discover-ranking-card:hover {
+    border-color: rgba(255, 139, 64, 0.50);
+    box-shadow: 0 18px 36px rgba(255, 139, 64, 0.12);
+    transform: translateY(-2px);
+}
+
+.ranking-card-title {
+    color: #fff;
+    display: block;
+    font-size: 19px;
+    font-weight: 900;
+    margin-bottom: 14px;
+}
+
+.artist-ranking-list {
+    counter-reset: artist-rank;
+    display: grid;
+    gap: 10px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.artist-ranking-list li {
+    counter-increment: artist-rank;
+}
+
+.artist-ranking-list a {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 14px;
+    color: #fff;
+    display: grid;
+    gap: 4px;
+    grid-template-columns: auto 1fr;
+    padding: 11px 12px;
+    transition: 0.2s ease;
+}
+
+.artist-ranking-list a::before {
+    color: #ffb17a;
+    content: counter(artist-rank, decimal-leading-zero);
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0;
+    min-width: 28px;
+}
+
+.artist-ranking-list a:hover {
+    background: rgba(255, 139, 64, 0.16);
+    border-color: rgba(255, 139, 64, 0.48);
+    transform: translateX(3px);
+}
+
+.artist-ranking-list strong {
+    font-size: 19px;
+}
+
+.artist-ranking-list span {
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 14px;
+    grid-column: 2;
+}
+
+.artist-ranking-list.compact a {
+    font-size: 15px;
+}
+
+.artist-ranking-list.selected {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
 .discover-result .recommendation-card:hover {
     background: rgba(255, 139, 64, 0.14);
     border-color: rgba(255, 139, 64, 0.46);
@@ -768,8 +1127,13 @@ a:hover {
     }
 
     .artist-hero,
-    .artist-content-grid {
+    .artist-content-grid,
+    .concert-layout {
         grid-template-columns: 1fr;
+    }
+
+    .concert-list {
+        max-height: none;
     }
 
     .artist-title {

@@ -11,6 +11,7 @@ from services.spotify_api import (
 )
 from services.lastfm_api import get_similar_artists, get_artist_tags
 from services.wiki_scraper import get_artist_bio
+from services.concert_api import get_upcoming_concerts
 
 
 def build_backup_artist(artist_name):
@@ -328,12 +329,14 @@ def mood_page():
 def discover_page():
     selected_filter = request.args.get("type", "").strip()
     selected_recommendation = build_discover_recommendation(selected_filter)
+    selected_ranking = DISCOVER_FILTERS.get(selected_filter, {}).get("artists", [])
 
     return render_template(
         "discover.html",
         filters=DISCOVER_FILTERS,
         selected_filter=selected_filter,
-        selected_recommendation=selected_recommendation
+        selected_recommendation=selected_recommendation,
+        selected_ranking=selected_ranking
     )
 
 
@@ -387,6 +390,8 @@ def artist_page():
         artist_bio = get_artist_bio(artist_name)
         data_status["lastfm"] = "已取得" if artist_tags or similar_artists else "暫時無資料"
         data_status["wikipedia"] = "已取得" if artist_bio else "暫時無資料"
+        concert_data = get_upcoming_concerts(artist.get("name") or artist_name)
+        concert_events = concert_data.get("events", [])
         style_insights = build_style_insights(artist_tags, similar_artists)
 
         album_years = []
@@ -409,11 +414,14 @@ def artist_page():
         single_chart_values = [single_counts[year] for year in chart_labels]
         album_total = sum(album_chart_values)
         single_total = sum(single_chart_values)
+        if not chart_labels and albums:
+            album_total = len([album for album in albums if album.get("album_type") != "single"])
+            single_total = len([album for album in albums if album.get("album_type") == "single"])
         yearly_totals = {
             year: album_counts[year] + single_counts[year]
             for year in chart_labels
         }
-        most_active_year = max(yearly_totals, key=yearly_totals.get) if yearly_totals else "無資料"
+        most_active_year = max(yearly_totals, key=yearly_totals.get) if yearly_totals else "Last.fm"
         chart_summary = {
             "total": album_total + single_total,
             "albums": album_total,
@@ -429,6 +437,8 @@ def artist_page():
             artist_tags=artist_tags,
             artist_bio=artist_bio,
             style_insights=style_insights,
+            concert_events=concert_events,
+            concert_message=concert_data.get("message"),
             chart_labels=chart_labels,
             album_chart_values=album_chart_values,
             single_chart_values=single_chart_values,

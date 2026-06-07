@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>歌手資料頁</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
     <div class="container">
@@ -18,10 +20,20 @@
                     <p>可以回首頁重新搜尋，或從情境推薦、風格探索開始找歌手。</p>
                 </div>
             {% else %}
+                <div class="artist-motion-backdrop" aria-hidden="true">
+                    {% if artist.image %}
+                        <img class="artist-backdrop-image" src="{{ artist.image }}" alt="" crossorigin="anonymous">
+                    {% endif %}
+                    <div class="motion-light motion-light-one"></div>
+                    <div class="motion-light motion-light-two"></div>
+                    <div class="motion-light motion-light-three"></div>
+                    <div class="motion-scanline"></div>
+                </div>
+
                 <div class="artist-hero">
                     <div class="artist-image-wrap">
                         {% if artist.image %}
-                            <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
+                            <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image" crossorigin="anonymous">
                         {% endif %}
                     </div>
 
@@ -129,6 +141,10 @@
                             <div class="spotify-fallback-box">
                                 Spotify 目前被限流，播放器暫時無法載入。這裡保留區塊，等 API 恢復後會自動回到播放器。
                             </div>
+                            <div class="spotify-unavailable">
+    <strong>Spotify 目前無法提供播放器</strong>
+    <p>已改用 Last.fm 與 Wikipedia 顯示歌手資料，專輯清單也會使用 Last.fm 熱門專輯。</p>
+</div>
                         {% else %}
                             <iframe
                                 src="{{ artist.embed_url }}"
@@ -137,6 +153,8 @@
                                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                                 loading="lazy">
                             </iframe>
+                        
+                            
                         {% endif %}
                     </div>
 
@@ -146,9 +164,42 @@
                     </div>
                 </div>
 
+                <div class="section-card concerts-section">
+                    <div class="section-title-row">
+                        <div>
+                            <h2>未來一年演唱會</h2>
+                            <p>整理 Ticketmaster 提供的近期公開場次，地圖標註點可移入或點擊查看日期、場館與位置。</p>
+                        </div>
+                    </div>
+
+                    {% if concert_events %}
+                        <div class="concert-layout">
+                            <div id="concertMap" class="concert-map" aria-label="演唱會地圖"></div>
+                            <div class="concert-list">
+                                {% for concert in concert_events %}
+                                    <a class="concert-card" href="{{ concert.url }}" target="_blank" rel="noopener noreferrer">
+                                        <strong>{{ concert.date }}</strong>
+                                        <span>{{ concert.venue }}</span>
+                                        <small>{{ concert.city }}{% if concert.region %}, {{ concert.region }}{% endif %}{% if concert.country %}, {{ concert.country }}{% endif %}</small>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="spotify-unavailable compact">
+                            <strong>未找到未來一年公開演唱會</strong>
+                            <p>{{ concert_message or "Ticketmaster 目前沒有這位歌手未來一年的公開場次。" }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+
                 <div class="section-card chart-section">
                     <h2>作品年份分布圖</h2>
-                    <p class="chart-note">依 Spotify 作品類型區分專輯與單曲，方便比較不同年份的發行重點。</p>
+                    {% if chart_labels %}
+                        <p class="chart-note">依 Spotify 作品類型區分專輯與單曲，方便比較不同年份的發行重點。</p>
+                    {% else %}
+                        <p class="chart-note">Spotify 目前無法提供年份資料，已改用 Last.fm 熱門專輯清單顯示作品。</p>
+                    {% endif %}
 
                     <div class="chart-summary-grid">
                         <div class="chart-summary-card">
@@ -169,9 +220,16 @@
                         </div>
                     </div>
 
-                    <div class="chart-wrapper">
-                        <canvas id="yearChart"></canvas>
-                    </div>
+                    {% if chart_labels %}
+                        <div class="chart-wrapper">
+                            <canvas id="yearChart"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="spotify-unavailable compact">
+                            <strong>目前沒有可繪製的年份資料</strong>
+                            <p>Last.fm 提供熱門專輯名稱，但沒有發行年份，所以這裡先保留作品統計，不顯示空白圖表。</p>
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="section-card discography-section">
@@ -240,6 +298,7 @@
                     {% endif %}
                 </div>
 
+                {% if chart_labels %}
                 <script>
                     const labels = {{ chart_labels | tojson }};
                     const albumValues = {{ album_chart_values | tojson }};
@@ -353,8 +412,108 @@
                         });
                     });
                 </script>
+                {% endif %}
+                <script>
+                    (() => {
+                        const pageCard = document.querySelector('.artist-page-card');
+                        const artistImage = document.querySelector('.artist-image');
+                        if (!pageCard || !artistImage || !artistImage.src) {
+                            return;
+                        }
+
+                        const colorImage = new Image();
+                        colorImage.crossOrigin = 'anonymous';
+                        colorImage.src = artistImage.currentSrc || artistImage.src;
+
+                        colorImage.onload = () => {
+                            try {
+                                const canvas = document.createElement('canvas');
+                                const size = 64;
+                                canvas.width = size;
+                                canvas.height = size;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(colorImage, 0, 0, size, size);
+                                const pixels = ctx.getImageData(0, 0, size, size).data;
+                                const buckets = new Map();
+
+                                for (let i = 0; i < pixels.length; i += 16) {
+                                    const r = pixels[i];
+                                    const g = pixels[i + 1];
+                                    const b = pixels[i + 2];
+                                    const max = Math.max(r, g, b);
+                                    const min = Math.min(r, g, b);
+                                    const saturation = max - min;
+                                    const brightness = (r + g + b) / 3;
+
+                                    if (brightness < 34 || brightness > 238 || saturation < 16) {
+                                        continue;
+                                    }
+
+                                    const key = [
+                                        Math.round(r / 28) * 28,
+                                        Math.round(g / 28) * 28,
+                                        Math.round(b / 28) * 28
+                                    ].join(',');
+                                    buckets.set(key, (buckets.get(key) || 0) + 1);
+                                }
+
+                                const colors = [...buckets.entries()]
+                                    .sort((a, b) => b[1] - a[1])
+                                    .slice(0, 3)
+                                    .map(([key]) => `rgb(${key})`);
+
+                                if (colors.length >= 3) {
+                                    pageCard.style.setProperty('--artist-color-1', colors[0]);
+                                    pageCard.style.setProperty('--artist-color-2', colors[1]);
+                                    pageCard.style.setProperty('--artist-color-3', colors[2]);
+                                    pageCard.classList.add('has-sampled-colors');
+                                }
+                            } catch (error) {
+                                console.warn('Artist image color sampling failed:', error);
+                            }
+                        };
+                    })();
+                </script>
             {% endif %}
         </div>
     </div>
+    {% if not error and concert_events %}
+        <script>
+            const concertEvents = {{ concert_events | tojson }};
+            const mappedConcerts = concertEvents.filter((event) => event.latitude && event.longitude);
+
+            if (mappedConcerts.length > 0 && window.L) {
+                const map = L.map('concertMap', {
+                    scrollWheelZoom: false
+                });
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+                }).addTo(map);
+
+                const bounds = [];
+
+                mappedConcerts.forEach((event) => {
+                    const location = [event.latitude, event.longitude];
+                    bounds.push(location);
+
+                    const marker = L.marker(location).addTo(map);
+                    const details = `
+                        <strong>${event.date}</strong><br>
+                        ${event.venue}<br>
+                        ${[event.city, event.region, event.country].filter(Boolean).join(', ')}
+                    `;
+
+                    marker.bindPopup(details);
+                    marker.on('mouseover', () => marker.openPopup());
+                });
+
+                map.fitBounds(bounds, {
+                    maxZoom: 8,
+                    padding: [28, 28]
+                });
+            }
+        </script>
+    {% endif %}
 </body>
 </html>
