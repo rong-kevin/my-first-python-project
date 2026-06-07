@@ -79,7 +79,7 @@ my-first-python-project/
 │   ├── mood.html
 │   └── discover.html
 └── static/
-    ├── favicon.svg
+    ├── favicon.png
     ├── home.css
     └── style.css
 ```
