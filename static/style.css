@@ -539,6 +539,10 @@ a:hover {
     align-items: center;
     display: flex;
     min-height: 352px;
+    justify-content: center;
+    text-align: center;
+}
+
 .spotify-link.disabled {
     cursor: default;
     opacity: 0.82;
