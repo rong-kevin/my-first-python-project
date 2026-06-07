@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: melomap
+    runtime: python
+    plan: free
+    branch: main
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    healthCheckPath: /health
+    envVars:
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: SPOTIFY_PAUSED
+        value: "false"
+      - key: SPOTIFY_CLIENT_ID
+        sync: false
+      - key: SPOTIFY_CLIENT_SECRET
+        sync: false
+      - key: LASTFM_API_KEY
+        sync: false
+      - key: TICKETMASTER_API_KEY
+        sync: false

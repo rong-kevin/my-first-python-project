@@ -306,6 +306,11 @@ def home():
     )
 
 
+@app.route("/health")
+def health():
+    return {"status": "ok"}
+
+
 @app.route("/random")
 def random_artist():
     artist_name = random.choice(POPULAR_ARTISTS)
