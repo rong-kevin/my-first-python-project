@@ -12,7 +12,9 @@
 <body class="home-page">
     <main class="home-shell">
         <nav class="home-nav" aria-label="主要導覽">
-            <a href="/" class="brand-mark">MeloMap.</a>
+            <a href="/" class="brand-mark" aria-label="MeloMap 首頁">
+                <img src="{{ url_for('static', filename='melomap-wordmark.png') }}" alt="MeloMap">
+            </a>
             <div class="nav-links">
                 <a href="#search">搜尋</a>
                 <a href="/mood">情境推薦</a>
@@ -25,8 +27,8 @@
             <div class="hero-copy">
                 <p class="hero-kicker">Navigate Your Sonic Universe.</p>
                 <h1 class="hero-title">
-                    <span>探索下一個</span>
-                    <span>會喜歡的聲音</span>
+                    <span>導航你的</span>
+                    <span>聲音宇宙</span>
                 </h1>
                 <p class="hero-subtitle">
                     這不只是一個音樂探索網站，更是一張連結歌手、曲風與演唱會的音樂地圖。

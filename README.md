@@ -81,6 +81,7 @@ my-first-python-project/
 └── static/
     ├── favicon.png
     ├── home.css
+    ├── melomap-wordmark.png
     └── style.css
 ```
 
