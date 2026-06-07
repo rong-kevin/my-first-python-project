@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MusicScope｜歌手與演唱會探索</title>
+    <title>MeloMap.｜導航你的聲音宇宙</title>
     <meta name="theme-color" content="#070707">
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -12,7 +12,7 @@
 <body class="home-page">
     <main class="home-shell">
         <nav class="home-nav" aria-label="主要導覽">
-            <a href="/" class="brand-mark">MusicScope</a>
+            <a href="/" class="brand-mark">MeloMap.</a>
             <div class="nav-links">
                 <a href="#search">搜尋</a>
                 <a href="/mood">情境推薦</a>
@@ -23,13 +23,14 @@
 
         <section class="music-hero" id="search">
             <div class="hero-copy">
-                <p class="hero-kicker">Music discovery for every mood</p>
+                <p class="hero-kicker">Navigate Your Sonic Universe.</p>
                 <h1 class="hero-title">
                     <span>探索下一個</span>
                     <span>會喜歡的聲音</span>
                 </h1>
                 <p class="hero-subtitle">
-                    搜尋歌手、查看作品年份、聽 Spotify 播放器，也能從情境與曲風開始找到新的音樂人。
+                    這不只是一個音樂探索網站，更是一張連結歌手、曲風與演唱會的音樂地圖。
+                    透過 Spotify 延伸聽覺探索，並結合 Ticketmaster 與 Leaflet，找到下一場演唱會。
                 </p>
 
                 <form action="/artist" method="get" class="home-search-form" id="artistSearchForm">

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% if artist %}{{ artist.name }}｜{% endif %}MusicScope</title>
+    <title>{% if artist %}{{ artist.name }}｜{% endif %}MeloMap.</title>
     <meta name="theme-color" content="#101010">
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -40,7 +40,7 @@
                     </div>
 
                     <div class="artist-overview">
-                        <p class="eyebrow">Artist Explorer</p>
+                        <p class="eyebrow">MeloMap.</p>
                         <h1 class="artist-title">{{ artist.name }}</h1>
 
                         <div class="artist-tag-list">

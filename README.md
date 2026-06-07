@@ -1,6 +1,12 @@
-# MusicScope
+# MeloMap.
 
-MusicScope 是一個以 Python Flask 製作的歌手與演唱會探索網站。使用者可以搜尋歌手，也能從心情、語言與曲風開始探索音樂。網站整合 Spotify、Last.fm、Wikipedia 與 Ticketmaster，集中顯示歌手資料、作品、播放器、相似歌手、作品年份、演唱會與地圖。
+> **Navigate Your Sonic Universe.**
+>
+> 導航你的聲音宇宙。
+
+MeloMap. 是一張連結歌手、曲風與演唱會的音樂地圖。使用者可以搜尋歌手，也能從心情、語言與曲風開始探索音樂。我們透過 Spotify 延伸聽覺探索，並結合 Ticketmaster 與 Leaflet，引導使用者找到下一場演唱會。
+
+網站以 Python Flask 製作，整合 Spotify、Last.fm、Wikipedia 與 Ticketmaster，集中顯示歌手資料、作品、播放器、相似歌手、作品年份、演唱會與地圖。
 
 ## 線上網站
 
