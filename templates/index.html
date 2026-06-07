@@ -22,7 +22,10 @@
         <section class="music-hero" id="search">
             <div class="hero-copy">
                 <p class="hero-kicker">Music discovery for every mood</p>
-                <h1>探索下一個會喜歡的<span class="keep-together">聲音</span></h1>
+                <h1 class="hero-title">
+                    <span>探索下一個</span>
+                    <span>會喜歡的聲音</span>
+                </h1>
                 <p class="hero-subtitle">
                     搜尋歌手、查看作品年份、聽 Spotify 播放器，也能從情境與曲風開始找到新的音樂人。
                 </p>
@@ -52,16 +55,20 @@
                 </div>
             </div>
 
-            <div class="hero-visual" aria-hidden="true">
+            <div class="hero-visual" role="group" aria-label="隨機推薦歌手">
                 <div class="album-wall">
                     {% for card in hero_artist_cards %}
-                        <div class="album-tile tile-{{ loop.index }}">
+                        <a
+                            href="{{ url_for('artist_page', name=card.name) }}"
+                            class="album-tile tile-{{ loop.index }} artist-loading-link"
+                            aria-label="查看 {{ card.name }} 的歌手資料">
                             {% if card.image %}
-                                <img src="{{ card.image }}" alt="">
+                                <img src="{{ card.image }}" alt="{{ card.name }}">
                             {% else %}
                                 <span>{{ card.name[:1] }}</span>
                             {% endif %}
-                        </div>
+                            <span class="album-tile-label">{{ card.name }}</span>
+                        </a>
                     {% endfor %}
                 </div>
             </div>
