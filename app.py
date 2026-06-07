@@ -391,7 +391,7 @@ def artist_page():
 
         similar_artists = get_similar_artists(artist_name)
         artist_tags = get_artist_tags(artist_name)
-        artist_bio = get_artist_bio(artist_name)
+        artist_bio = get_artist_bio(artist.get("name") or artist_name)
         data_status["lastfm"] = "已取得" if artist_tags or similar_artists else "暫時無資料"
         data_status["wikipedia"] = "已取得" if artist_bio else "暫時無資料"
         try:
