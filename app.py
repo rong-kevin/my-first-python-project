@@ -394,7 +394,14 @@ def artist_page():
         artist_bio = get_artist_bio(artist_name)
         data_status["lastfm"] = "已取得" if artist_tags or similar_artists else "暫時無資料"
         data_status["wikipedia"] = "已取得" if artist_bio else "暫時無資料"
-        concert_data = get_upcoming_concerts(artist.get("name") or artist_name)
+        try:
+            concert_data = get_upcoming_concerts(artist.get("name") or artist_name)
+        except Exception:
+            concert_data = {
+                "events": [],
+                "message": "演唱會資料目前暫時無法取得，請稍後再試。",
+                "status": "unavailable"
+            }
         concert_events = concert_data.get("events", [])
         style_insights = build_style_insights(artist_tags, similar_artists)
 
@@ -443,6 +450,7 @@ def artist_page():
             style_insights=style_insights,
             concert_events=concert_events,
             concert_message=concert_data.get("message"),
+            concert_status=concert_data.get("status", "empty"),
             chart_labels=chart_labels,
             album_chart_values=album_chart_values,
             single_chart_values=single_chart_values,

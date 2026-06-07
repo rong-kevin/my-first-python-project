@@ -13,7 +13,7 @@
         radial-gradient(circle at 80% 18%, rgba(214, 76, 24, 0.30), transparent 30%),
         linear-gradient(180deg, #070707 0%, #101010 56%, #070707 100%);
     min-height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
     padding: 28px clamp(18px, 4vw, 56px) 64px;
 }
 
@@ -77,6 +77,8 @@
 
 .hero-copy {
     max-width: 720px;
+    min-width: 0;
+    width: 100%;
 }
 
 .hero-kicker {
@@ -121,6 +123,7 @@
     margin-top: 34px;
     max-width: 680px;
     padding: 8px;
+    width: 100%;
 }
 
 .home-search-form input {
@@ -509,8 +512,21 @@
 }
 
 @media (max-width: 640px) {
+    .home-shell {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
     .brand-mark {
         font-size: 24px;
+    }
+
+    .home-nav,
+    .music-hero,
+    .hero-copy,
+    .home-search-form {
+        min-width: 0;
+        width: 100%;
     }
 
     .nav-links a {
@@ -529,6 +545,11 @@
         border-radius: 26px;
         flex-direction: column;
         padding: 10px;
+    }
+
+    .home-search-form input {
+        min-width: 0;
+        width: 100%;
     }
 
     .home-search-form button {
@@ -551,7 +572,8 @@
 
     .album-wall {
         gap: 10px;
-        grid-template-columns: repeat(3, 88px);
+        grid-template-columns: repeat(3, minmax(0, 88px));
+        max-width: calc(100vw - 48px);
     }
 
     .index-card {

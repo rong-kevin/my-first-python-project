@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>歌手資料頁</title>
+    <title>{% if artist %}{{ artist.name }}｜{% endif %}MusicScope</title>
+    <meta name="theme-color" content="#101010">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -181,9 +183,14 @@
                             </div>
                         </div>
                     {% else %}
-                        <div class="spotify-unavailable compact">
-                            <strong>未找到未來一年公開演唱會</strong>
-                            <p>{{ concert_message or "Ticketmaster 目前沒有這位歌手未來一年的公開場次。" }}</p>
+                        <div class="service-message {{ 'service-message-error' if concert_status == 'unavailable' else '' }}">
+                            {% if concert_status == "unavailable" %}
+                                <strong>演唱會資料暫時無法取得</strong>
+                                <p>{{ concert_message or "Ticketmaster 目前無法連線，請稍後再試。" }}</p>
+                            {% else %}
+                                <strong>未找到未來一年公開演唱會</strong>
+                                <p>{{ concert_message or "Ticketmaster 目前沒有這位歌手未來一年的公開場次。" }}</p>
+                            {% endif %}
                         </div>
                     {% endif %}
                 </div>

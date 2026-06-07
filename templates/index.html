@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>歌手資料探索網站</title>
+    <title>MusicScope｜歌手與演唱會探索</title>
+    <meta name="theme-color" content="#070707">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
 </head>
 <body class="home-page">
     <main class="home-shell">
         <nav class="home-nav" aria-label="主要導覽">
-            <a href="/" class="brand-mark">Artist Explorer</a>
+            <a href="/" class="brand-mark">MusicScope</a>
             <div class="nav-links">
                 <a href="#search">搜尋</a>
                 <a href="/mood">情境推薦</a>
