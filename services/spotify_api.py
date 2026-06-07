@@ -79,7 +79,7 @@ def search_artist(artist_name):
         }
     except requests.RequestException as error:
         print(f"Spotify search unavailable for {artist_name}: {error}")
-        return fallback_artist(artist_name)
+        raise
 
 def fallback_artist_preview(artist_name):
     return {

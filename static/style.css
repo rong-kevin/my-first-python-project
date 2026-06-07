@@ -512,15 +512,13 @@ a:hover {
 }
 
 .data-status-row span.warning,
-.backup-notice,
-.spotify-fallback-box {
+.backup-notice {
     background: rgba(255, 139, 64, 0.16);
     border-color: rgba(255, 139, 64, 0.38);
     color: #ffd2ad;
 }
 
-.backup-notice,
-.spotify-fallback-box {
+.backup-notice {
     border: 1px solid rgba(255, 139, 64, 0.38);
     border-radius: 16px;
     font-weight: 800;
@@ -533,14 +531,6 @@ a:hover {
     cursor: default;
     opacity: 0.72;
     pointer-events: none;
-}
-
-.spotify-fallback-box {
-    align-items: center;
-    display: flex;
-    min-height: 352px;
-    justify-content: center;
-    text-align: center;
 }
 
 .spotify-link.disabled {

@@ -369,6 +369,10 @@ def artist_page():
                 artist = build_backup_artist(artist_name)
                 spotify_unavailable = True
                 data_status["spotify"] = "限流中，已切換備用資料"
+            else:
+                if artist.get("spotify_url") == "#" or artist.get("embed_url") == "#":
+                    spotify_unavailable = True
+                    data_status["spotify"] = "未取得，已切換備用資料"
 
         if not artist:
             artist = build_backup_artist(artist_name)
