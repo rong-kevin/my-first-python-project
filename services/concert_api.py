@@ -10,10 +10,11 @@ TICKETMASTER_API_KEY = os.getenv("TICKETMASTER_API_KEY")
 TICKETMASTER_BASE_URL = "https://app.ticketmaster.com/discovery/v2"
 
 
-def ticketmaster_status(message, events=None):
+def ticketmaster_status(message, events=None, status="empty"):
     return {
         "events": events or [],
-        "message": message
+        "message": message,
+        "status": status
     }
 
 
@@ -123,7 +124,7 @@ def get_upcoming_concerts(artist_name):
 
     attraction_ids, attraction_error = get_attraction_ids(artist_name)
     if attraction_error:
-        return ticketmaster_status(attraction_error)
+        return ticketmaster_status(attraction_error, status="unavailable")
 
     for attraction_id in attraction_ids:
         events, event_error = search_events({
@@ -132,10 +133,14 @@ def get_upcoming_concerts(artist_name):
         }, artist_name)
 
         if event_error:
-            return ticketmaster_status(event_error)
+            return ticketmaster_status(event_error, status="unavailable")
 
         if events:
-            return ticketmaster_status("Ticketmaster 已找到未來一年場次。", events)
+            return ticketmaster_status(
+                "Ticketmaster 已找到未來一年場次。",
+                events,
+                status="available"
+            )
 
     events, keyword_error = search_events({
         **date_params,
@@ -143,9 +148,13 @@ def get_upcoming_concerts(artist_name):
     }, artist_name)
 
     if keyword_error:
-        return ticketmaster_status(keyword_error)
+        return ticketmaster_status(keyword_error, status="unavailable")
 
     if events:
-        return ticketmaster_status("Ticketmaster 已找到未來一年場次。", events)
+        return ticketmaster_status(
+            "Ticketmaster 已找到未來一年場次。",
+            events,
+            status="available"
+        )
 
     return ticketmaster_status("Ticketmaster 目前沒有這位歌手未來一年的公開場次。")

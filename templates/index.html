@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>歌手資料探索網站</title>
+    <title>MeloMap.｜導航你的聲音宇宙</title>
+    <meta name="theme-color" content="#070707">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
 </head>
 <body class="home-page">
     <main class="home-shell">
         <nav class="home-nav" aria-label="主要導覽">
-            <a href="/" class="brand-mark">Artist Explorer</a>
+            <a href="/" class="brand-mark" aria-label="MeloMap 首頁">
+                <img src="{{ url_for('static', filename='melomap-wordmark.png') }}" alt="MeloMap">
+            </a>
             <div class="nav-links">
                 <a href="#search">搜尋</a>
                 <a href="/mood">情境推薦</a>
@@ -21,10 +25,14 @@
 
         <section class="music-hero" id="search">
             <div class="hero-copy">
-                <p class="hero-kicker">Music discovery for every mood</p>
-                <h1>探索下一個會喜歡的<span class="keep-together">聲音</span></h1>
+                <p class="hero-kicker">Navigate Your Sonic Universe.</p>
+                <h1 class="hero-title">
+                    <span>導航你的</span>
+                    <span>聲音宇宙</span>
+                </h1>
                 <p class="hero-subtitle">
-                    搜尋歌手、查看作品年份、聽 Spotify 播放器，也能從情境與曲風開始找到新的音樂人。
+                    這不只是一個音樂探索網站，更是一張連結歌手、曲風與演唱會的音樂地圖。
+                    透過 Spotify 延伸聽覺探索，並結合 Ticketmaster 與 Leaflet，找到下一場演唱會。
                 </p>
 
                 <form action="/artist" method="get" class="home-search-form" id="artistSearchForm">
@@ -52,16 +60,20 @@
                 </div>
             </div>
 
-            <div class="hero-visual" aria-hidden="true">
+            <div class="hero-visual" role="group" aria-label="隨機推薦歌手">
                 <div class="album-wall">
                     {% for card in hero_artist_cards %}
-                        <div class="album-tile tile-{{ loop.index }}">
+                        <a
+                            href="{{ url_for('artist_page', name=card.name) }}"
+                            class="album-tile tile-{{ loop.index }} artist-loading-link"
+                            aria-label="查看 {{ card.name }} 的歌手資料">
                             {% if card.image %}
-                                <img src="{{ card.image }}" alt="">
+                                <img src="{{ card.image }}" alt="{{ card.name }}">
                             {% else %}
                                 <span>{{ card.name[:1] }}</span>
                             {% endif %}
-                        </div>
+                            <span class="album-tile-label">{{ card.name }}</span>
+                        </a>
                     {% endfor %}
                 </div>
             </div>

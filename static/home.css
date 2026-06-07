@@ -13,7 +13,7 @@
         radial-gradient(circle at 80% 18%, rgba(214, 76, 24, 0.30), transparent 30%),
         linear-gradient(180deg, #070707 0%, #101010 56%, #070707 100%);
     min-height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
     padding: 28px clamp(18px, 4vw, 56px) 64px;
 }
 
@@ -29,11 +29,15 @@
 }
 
 .brand-mark {
-    color: #1ed760;
-    font-size: 28px;
-    font-weight: 900;
-    letter-spacing: 0;
+    display: inline-flex;
+    flex: 0 0 auto;
     text-decoration: none;
+}
+
+.brand-mark img {
+    display: block;
+    height: auto;
+    width: 210px;
 }
 
 .brand-mark:hover,
@@ -64,19 +68,21 @@
 }
 
 .music-hero {
-    align-items: center;
+    align-items: start;
     display: grid;
     gap: 48px;
     grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
-    margin: 74px auto 0;
+    margin: 42px auto 0;
     max-width: 1240px;
-    min-height: 620px;
+    min-height: 560px;
     position: relative;
     z-index: 1;
 }
 
 .hero-copy {
     max-width: 720px;
+    min-width: 0;
+    width: 100%;
 }
 
 .hero-kicker {
@@ -90,7 +96,7 @@
 
 .hero-copy h1 {
     color: #fff;
-    font-size: clamp(48px, 8vw, 106px);
+    font-size: clamp(48px, 6.6vw, 92px);
     font-weight: 950;
     letter-spacing: 0;
     line-height: 0.98;
@@ -98,8 +104,8 @@
     max-width: 860px;
 }
 
-.keep-together {
-    display: inline-block;
+.hero-title span {
+    display: block;
     white-space: nowrap;
 }
 
@@ -121,6 +127,7 @@
     margin-top: 34px;
     max-width: 680px;
     padding: 8px;
+    width: 100%;
 }
 
 .home-search-form input {
@@ -249,20 +256,40 @@
 }
 
 .album-tile {
+    --tile-offset: 0px;
     align-items: center;
     aspect-ratio: 1;
     background: linear-gradient(135deg, #222, #393939);
     border-radius: 18px;
     box-shadow: 0 24px 42px rgba(0, 0, 0, 0.38);
+    color: #fff;
+    cursor: pointer;
     display: flex;
     justify-content: center;
     overflow: hidden;
+    position: relative;
+    transform: translateY(var(--tile-offset));
+    transition: box-shadow 0.22s ease, transform 0.22s ease;
+}
+
+.album-tile:hover,
+.album-tile:focus-visible {
+    box-shadow: 0 30px 54px rgba(0, 0, 0, 0.52);
+    outline: none;
+    transform: translateY(var(--tile-offset)) scale(1.06) rotate(-2deg);
+    z-index: 3;
 }
 
 .album-tile img {
     height: 100%;
     object-fit: cover;
+    transition: transform 0.22s ease;
     width: 100%;
+}
+
+.album-tile:hover img,
+.album-tile:focus-visible img {
+    transform: scale(1.05);
 }
 
 .album-tile span,
@@ -272,13 +299,34 @@
     font-weight: 950;
 }
 
+.album-tile .album-tile-label {
+    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.88));
+    bottom: 0;
+    font-size: 14px;
+    font-weight: 900;
+    left: 0;
+    line-height: 1.25;
+    opacity: 0;
+    padding: 34px 12px 12px;
+    position: absolute;
+    right: 0;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.album-tile:hover .album-tile-label,
+.album-tile:focus-visible .album-tile-label {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .tile-2,
 .tile-5 {
-    transform: translateY(34px);
+    --tile-offset: 34px;
 }
 
 .tile-3 {
-    transform: translateY(-18px);
+    --tile-offset: -18px;
 }
 
 .quick-index,
@@ -439,7 +487,7 @@
     .music-hero {
         gap: 28px;
         grid-template-columns: 1fr;
-        margin-top: 46px;
+        margin-top: 34px;
         min-height: auto;
     }
 
@@ -468,8 +516,21 @@
 }
 
 @media (max-width: 640px) {
-    .brand-mark {
-        font-size: 24px;
+    .home-shell {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .brand-mark img {
+        width: 180px;
+    }
+
+    .home-nav,
+    .music-hero,
+    .hero-copy,
+    .home-search-form {
+        min-width: 0;
+        width: 100%;
     }
 
     .nav-links a {
@@ -488,6 +549,11 @@
         border-radius: 26px;
         flex-direction: column;
         padding: 10px;
+    }
+
+    .home-search-form input {
+        min-width: 0;
+        width: 100%;
     }
 
     .home-search-form button {
@@ -510,7 +576,8 @@
 
     .album-wall {
         gap: 10px;
-        grid-template-columns: repeat(3, 88px);
+        grid-template-columns: repeat(3, minmax(0, 88px));
+        max-width: calc(100vw - 48px);
     }
 
     .index-card {

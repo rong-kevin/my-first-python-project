@@ -1,131 +1,178 @@
-# 歌手資料探索網站 (Artist Explorer)
+# MeloMap.
 
-這是一個使用 Python Flask 製作的音樂資料探索網站。
-使用者可以輸入歌手名稱，網站會整合 Spotify、Last.fm 與 Wikipedia 的資料，顯示歌手的基本資訊、專輯 / 單曲、相似歌手推薦、Spotify 播放器，以及作品年份分布圖。
+> **Navigate Your Sonic Universe.**
+>
+> 導航你的聲音宇宙。
 
-此外，本專案也支援**終端機模式 (CLI)**，使用者可以直接在 Terminal 輸入歌手名稱，自動開啟對應的歌手網頁。
+MeloMap. 是一張連結歌手、曲風與演唱會的音樂地圖。使用者可以搜尋歌手，也能從心情、語言與曲風開始探索音樂。我們透過 Spotify 延伸聽覺探索，並結合 Ticketmaster 與 Leaflet，引導使用者找到下一場演唱會。
 
----
+網站以 Python Flask 製作，整合 Spotify、Last.fm、Wikipedia 與 Ticketmaster，集中顯示歌手資料、作品、播放器、相似歌手、作品年份、演唱會與地圖。
 
-## 專案功能
+## 線上網站
 
-- **搜尋歌手名稱**
-- **顯示歌手圖片與 Spotify 連結**
-- **內嵌 Spotify 官方播放器**
-- **顯示歷年專輯 / 單曲列表**
-- **顯示相似歌手推薦**
-- **顯示 Wikipedia 生平簡介**
-- **顯示作品發行年份分布圖 (資料視覺化)**
-- **支援終端機指令，快速開啟歌手頁面**
+- Render 網址：待部署後補上
+- 使用者回饋表單：待網站上線後補上
 
----
+## 主要功能
 
-##  使用技術
+- 搜尋歌手並查看基本資料、圖片、風格標籤與生平簡介
+- 顯示 Spotify 官方頁面、播放器、專輯與單曲
+- 依作品年份產生專輯與單曲分布圖
+- 顯示 Last.fm 相似歌手與音樂風格
+- 使用情境推薦，依讀書、運動、通勤、失戀或睡前尋找歌手
+- 使用語言與曲風分類探索歌手榜單
+- 從熱門歌手中隨機推薦歌手
+- 查詢未來一年 Ticketmaster 演唱會
+- 使用 Leaflet 地圖顯示演唱會場館位置
+- 依歌手圖片產生動態背景色彩
+- 首頁隨機歌手圖片可顯示名稱並連到歌手資料頁
+- 支援桌面與手機版響應式畫面
 
-- **後端框架**：Python, Flask
-- **前端介面**：HTML, CSS, Chart.js
-- **API 串接**：Spotify Web API, Last.fm API
-- **網頁爬蟲**：requests, BeautifulSoup (擷取 Wikipedia 資料)
-- **環境管理**：python-dotenv
+## 外部服務備援
 
----
+網站不會因為單一外部服務暫時失效而直接中斷：
 
-##  專案結構
+- Spotify 無法連線或被限流時，切換為 Last.fm 與 Wikipedia 備援資料
+- `SPOTIFY_PAUSED=true` 可手動暫停 Spotify API 請求
+- Ticketmaster 無法連線時，演唱會區顯示友善錯誤提示
+- 沒有演唱會時，會清楚顯示目前沒有公開場次
+- API 金鑰只放在本機 `.env` 或 Render Environment Variables
+
+## 使用技術
+
+- 後端：Python、Flask
+- 前端：HTML、CSS、JavaScript、Jinja
+- 圖表：Chart.js
+- 地圖：Leaflet
+- API：Spotify Web API、Last.fm API、Ticketmaster Discovery API
+- 資料來源：Wikipedia
+- 環境變數：python-dotenv
+
+## 組員分工
+
+| 組員 | Branch | 主要工作 |
+| --- | --- | --- |
+| 容可丞（rong-kevin） | `rkc`、`feature/final-integration` | 期中原始專案、功能整合、首頁互動、手機版、錯誤提示、網站品牌、README 與上線準備 |
+| Shaung | `shaung` | Ticketmaster 演唱會、Leaflet 地圖、歌手圖片動態背景、風格探索歌手榜單 |
+| Wendy（wseong000） | `Wendy` | Spotify 備援模式、`SPOTIFY_PAUSED`、資料來源狀態、專輯封面與 API 錯誤處理 |
+
+協作流程使用獨立 branch 開發，完成後透過 Pull Request 合併到 `main`。
+
+## 專案結構
 
 ```text
-my-first-project/
-├── app.py                  # Flask 主程式
-├── run.py                  # 終端機快速執行腳本
-├── visualize_artist.py     # 終端機視覺化腳本
-├── requirements.txt        # 專案套件清單
-├── README.md               # 專案說明文件
-├── .gitignore              # Git 忽略清單
-├── .env.example            # 環境變數範例檔
-├── services/               # 外部服務邏輯
-│   ├── spotify_api.py      # Spotify API 串接
-│   ├── lastfm_api.py       # Last.fm API 串接
-│   ├── wiki_scraper.py     # 維基百科爬蟲
-│   └── wordcloud_generator.py # 文字雲生成
-├── templates/              # HTML 模板
-│   ├── index.html          # 首頁
-│   └── artist.html         # 歌手資料頁
-└── static/                 # 靜態檔案
-    └── style.css           # 樣式表
+my-first-python-project/
+├── app.py
+├── run.py
+├── visualize_artist.py
+├── requirements.txt
+├── README.md
+├── .env.example
+├── services/
+│   ├── spotify_api.py
+│   ├── lastfm_api.py
+│   ├── wiki_scraper.py
+│   └── concert_api.py
+├── templates/
+│   ├── index.html
+│   ├── artist.html
+│   ├── mood.html
+│   └── discover.html
+└── static/
+    ├── favicon.png
+    ├── home.css
+    ├── melomap-wordmark.png
+    └── style.css
+```
 
-##  安裝
+## 本機安裝
 
-1. 建立虛擬環境
-請在終端機依序輸入以下指令，建立虛擬環境並安裝所需套件：
+以下指令適用於 Windows PowerShell。
+
+```powershell
+git clone https://github.com/rong-kevin/my-first-python-project.git
+cd my-first-python-project
 python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
 
-2.安裝套件
-.\.venv\Scripts\python -m pip install -r requirements.txt
+## 環境變數
 
-## 環境變數設定
-在專案根目錄建立一個 .env 檔案（可參考 .env.example），並填入你申請的 API 金鑰：
+在專案根目錄建立 `.env`，可先複製 `.env.example`：
 
-程式碼片段
+```env
 SPOTIFY_CLIENT_ID=your_spotify_client_id
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
 LASTFM_API_KEY=your_lastfm_api_key
+TICKETMASTER_API_KEY=your_ticketmaster_consumer_key
+SPOTIFY_PAUSED=false
+```
 
-## 執行方式
+`.env` 已加入 `.gitignore`，不可 commit 或 push 到 GitHub。
 
-A. 啟動網站模式
-在終端機輸入以下指令啟動 Flask 伺服器：
+## 執行網站
 
-.\.venv\Scripts\python app.py
-啟動後，開啟瀏覽器並進入 http://127.0.0.1:5000 即可使用。
+```powershell
+python app.py
+```
 
-B. 終端機模式 (CLI)
-本專案支援透過終端機指令直接查詢並開啟歌手頁面。請輸入：
+啟動後開啟：
 
-.\.venv\Scripts\python run.py "Taylor Swift"
-# 或
-.\.venv\Scripts\python run.py "周杰倫"
-程式將會自動開啟瀏覽器並導向該歌手的專屬頁面。
+```text
+http://127.0.0.1:5000
+```
 
-## 專案特色
+也可以在網站執行期間，透過終端機直接開啟指定歌手：
 
-1.多資料來源整合
+```powershell
+python run.py "Taylor Swift"
+python run.py "周杰倫"
+```
 
-Spotify：取得歌手基本資料、專輯清單，並內嵌播放器。
-Last.fm：獲取相似歌手推薦與風格標籤。
-Wikipedia：透過爬蟲技術抓取歌手生平簡介。
+## Git 協作方式
 
-2.資料視覺化
+```powershell
+git checkout main
+git pull --ff-only origin main
+git checkout -b feature/功能名稱
 
-根據歌手作品資料，將專輯 / 單曲的發行年份整理成圖表，直接顯示在網頁中。 
-搜尋與探索功能
+# 完成功能與測試後
+git add .
+git commit -m "描述本次修改"
+git push -u origin feature/功能名稱
+```
 
-3. 搜尋與探索功能 
+Push 後在 GitHub 建立 Pull Request，經檢查後再合併到 `main`。
 
-使用者不僅能搜尋單一歌手，還能透過「相似歌手」的推薦名單，不斷延伸探索其他潛力音樂人。
+## Render 上線設定
 
-4.網頁與終端整合
+上線時將 GitHub repository 連接到 Render，並在 Render Dashboard 設定與 `.env` 相同的環境變數。不要把真實 API key 寫進 repository。
 
-除了提供美觀的 Web 介面，也支援命令列操作，符合課程中終端輸入與程式執行的概念。
+正式部署前需確認：
 
-AI 協助開發內容
+- Production 啟動指令
+- 四組 API 環境變數
+- 網站主要頁面與手機版
+- Spotify 備援模式
+- Ticketmaster 演唱會與地圖
 
-發想專案主題
+## 使用者回饋
 
-規劃網站架構
+網站上線後，預計使用 Google 表單收集：
 
-建立 Flask 專案基礎模板
+- 網站操作是否容易
+- 搜尋歌手是否順利
+- 演唱會與地圖是否實用
+- 畫面設計評分
+- 最喜歡的功能
+- 建議改善內容
 
-協助串接 Spotify 與 Last.fm API，並處理 JSON 資料解析
+回饋統計與改善結果將整理到期末簡報。
 
-撰寫 BeautifulSoup 爬蟲以獲取 Wikipedia 資料
+## 安全提醒
 
-協助資料視覺化（發行年份圖表）的邏輯撰寫
-
-優化 HTML/CSS 的前端 UI 排版
-
-協助 Debug 與排除執行期間的各項錯誤 (Error Handling)
-
-⚠️ 注意事項
-.env 檔案包含敏感金鑰，絕對不可上傳到 GitHub。
-
-若外部 API（如 Spotify 或 Last.fm）暫時失效或更改驗證方式，部分資料可能無法正常顯示。
-
+- 不要上傳 `.env`
+- 不要在 HTML、JavaScript、README 或截圖中公開 API key
+- Render 請使用 Environment Variables
+- 若金鑰曾公開，應立即到服務平台撤銷並重新建立

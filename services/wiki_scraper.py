@@ -1,4 +1,5 @@
 import re
+import unicodedata
 
 import requests
 from urllib.parse import quote
@@ -28,11 +29,46 @@ DISAMBIGUATION_HINTS = [
     "可能指",
     "消歧義",
 ]
+NON_MUSIC_HINTS = [
+    "footballer",
+    "basketball player",
+    "baseball player",
+    "politician",
+    "businessman",
+    "businesswoman",
+    "academic",
+    "scientist",
+    "athlete",
+    "足球運動員",
+    "籃球運動員",
+    "棒球運動員",
+    "政治人物",
+    "企業家",
+    "學者",
+    "科學家",
+    "運動員",
+]
 
 
 def clean_wiki_text(text):
     text = re.sub(r"<.*?>", "", text or "")
     return text.strip()
+
+
+def normalize_name(value):
+    value = unicodedata.normalize("NFKD", value or "").casefold()
+    value = re.sub(r"\([^)]*\)", " ", value)
+    return "".join(character for character in value if character.isalnum())
+
+
+def candidate_matches_artist(candidate, summary, artist_name):
+    normalized_artist = normalize_name(artist_name)
+    if not normalized_artist:
+        return False
+
+    title = normalize_name(candidate.get("title", ""))
+    summary_start = normalize_name((summary or "")[:240])
+    return normalized_artist in title or normalized_artist in summary_start
 
 
 def search_wikipedia_titles(artist_name, language):
@@ -97,9 +133,12 @@ def get_wikipedia_summary(title, language):
     return summary
 
 
-def score_candidate(candidate, summary):
+def score_candidate(candidate, summary, artist_name):
     text = f"{candidate.get('title', '')} {candidate.get('snippet', '')} {summary}".lower()
-    score = 0
+    if not candidate_matches_artist(candidate, summary, artist_name):
+        return None
+
+    score = 20
 
     for keyword in MUSIC_KEYWORDS:
         if keyword.lower() in text:
@@ -111,6 +150,9 @@ def score_candidate(candidate, summary):
 
     if any(hint in text for hint in DISAMBIGUATION_HINTS):
         score -= 10
+
+    if any(hint in text for hint in NON_MUSIC_HINTS):
+        score -= 20
 
     return score
 
@@ -131,14 +173,17 @@ def get_artist_bio(artist_name):
                 if not summary:
                     continue
 
-                score = score_candidate(candidate, summary)
+                score = score_candidate(candidate, summary, artist_name)
+                if score is None:
+                    continue
+
                 if score > best_score:
                     best_score = score
                     best_summary = summary
             except Exception:
                 continue
 
-    if best_summary and best_score > 0:
+    if best_summary and best_score >= 23:
         return best_summary
 
-    return "暫時無法取得生平簡介。"
+    return None

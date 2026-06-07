@@ -11,6 +11,7 @@ body {
     font-family: Arial, "Microsoft JhengHei", sans-serif;
     margin: 0;
     min-height: 100vh;
+    overflow-x: hidden;
     padding: 0;
 }
 
@@ -501,6 +502,10 @@ a:hover {
     margin: 16px 0 0;
 }
 
+.artist-overview .artist-actions {
+    margin-top: 26px;
+}
+
 .data-status-row span {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.14);
@@ -566,6 +571,41 @@ a:hover {
 
 .spotify-unavailable.compact {
     min-height: 180px;
+}
+
+.service-message {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    min-height: 180px;
+    padding: 28px;
+    text-align: center;
+}
+
+.service-message strong {
+    color: #fff;
+    font-size: 20px;
+}
+
+.service-message p {
+    color: rgba(255, 255, 255, 0.68);
+    line-height: 1.7;
+    margin: 0;
+    max-width: 520px;
+}
+
+.service-message-error {
+    background: rgba(255, 139, 64, 0.12);
+    border-color: rgba(255, 139, 64, 0.34);
+}
+
+.service-message-error strong {
+    color: #ffd2ad;
 }
 
 .chart-section {
@@ -1165,12 +1205,60 @@ a:hover {
 }
 
 @media (max-width: 560px) {
+    .container {
+        padding: 16px 10px 36px;
+    }
+
+    .page-card {
+        border-radius: 16px;
+        margin-top: 12px;
+        padding: 16px;
+    }
+
+    .section-card {
+        border-radius: 16px;
+        margin-top: 18px;
+        padding: 16px;
+    }
+
     .section-card h2 {
         font-size: 25px;
     }
 
+    .artist-hero {
+        gap: 20px;
+        padding: 18px;
+    }
+
+    .artist-image {
+        margin: 0 auto;
+        max-width: 240px;
+    }
+
     .artist-title {
         font-size: 32px;
+        overflow-wrap: anywhere;
+    }
+
+    .artist-tag-list span,
+    .data-status-row span {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .artist-actions,
+    .spotify-link {
+        width: 100%;
+    }
+
+    .concert-map {
+        min-height: 280px;
+    }
+
+    .concert-card,
+    .album-row {
+        min-width: 0;
+        overflow-wrap: anywhere;
     }
 
     .artist-stat-grid,
